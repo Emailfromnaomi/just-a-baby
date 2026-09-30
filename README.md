@@ -1,5 +1,7 @@
 # Just a Baby
 
+Live at **[justababy.ca](https://justababy.ca)**.
+
 A baby tracker that reads like a life-sim game. Instead of charts and forms, you get four needs bars, a mood, a few moodlets, and five big buttons you can hit at 3am.
 
 <p>

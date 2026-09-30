@@ -27,9 +27,10 @@ This creates the tables (`babies`, `baby_members`, `events`, `invites`) and the 
 
 Go to **Authentication → URL Configuration**.
 
-- **Site URL:** `https://emailfromnaomi.github.io/just-a-baby/`
-- **Redirect URLs:** add both of these:
-  - `https://emailfromnaomi.github.io/just-a-baby/**`
+- **Site URL:** `https://justababy.ca`
+- **Redirect URLs:** add all of these:
+  - `https://justababy.ca/**`
+  - `https://www.justababy.ca/**`
   - `http://localhost:8000/**` (for testing on your own computer)
 
 The email sign-in link only works for URLs on this list.
@@ -71,7 +72,20 @@ The anon key is designed to be public. The access rules from step 2 are what pro
 
 1. In the GitHub repo, open **Settings → Pages**.
 2. Set **Source** to **Deploy from a branch**, the branch to `main`, and the folder to `/ (root)`.
-3. Save. The site appears at `https://emailfromnaomi.github.io/just-a-baby/` within a minute or two.
+3. Save. The site is served at `https://justababy.ca` (set by the `CNAME` file in this repo).
+4. In the same screen, turn on **Enforce HTTPS** once GitHub has issued the certificate. This can take up to a few hours after DNS is set.
+
+### DNS records at GoDaddy (justababy.ca)
+
+| Type | Name | Value |
+|---|---|---|
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | emailfromnaomi.github.io |
+
+Remove GoDaddy's default "Parked" A record for `@`, and any existing `www` record, first.
 
 ## 7. Test it with two people
 
