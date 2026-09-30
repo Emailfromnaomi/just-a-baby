@@ -20,36 +20,51 @@ A baby tracker that reads like a life-sim game. Instead of charts and forms, you
 
 ## Running it
 
-It's a single static file with no build step and no dependencies.
+It's a static site with no build step.
 
 ```sh
-git clone https://github.com/<you>/just-a-baby.git
+git clone https://github.com/Emailfromnaomi/just-a-baby.git
 cd just-a-baby
 python3 -m http.server 8000   # or any static server
 # open http://localhost:8000
 ```
 
-Opening `index.html` straight from disk also works.
+There are two modes, chosen by [`config.js`](config.js):
+
+| Mode | When | What you get |
+|---|---|---|
+| **Local** | `config.js` left empty | No accounts, a sample day, entries saved in this browser only. Good for demos and UI work. |
+| **Accounts** | Supabase URL and anon key filled in | Email sign-in, your own babies, invite links for caregivers, live sync, offline queue, export and delete. |
+
+To turn on accounts, follow **[SETUP.md](SETUP.md)**. It takes about 20 minutes.
+
+## Files
+
+| File | What it is |
+|---|---|
+| `index.html` | Markup for the sign-in, add-a-baby and main screens |
+| `app.css` | All styles, with light and dark themes |
+| `app.js` | The app: need math, portrait, logging, storage, sign-in |
+| `config.js` | Supabase URL and anon key (empty = local mode) |
+| `supabase/schema.sql` | Tables, row-level security and RPCs. Paste into Supabase once. |
+| `supabase/tests/` | Plain-Postgres tests of the access rules |
+| `privacy.html` | Draft privacy notice (fill in before the beta) |
+| `manifest.webmanifest`, `icons/` | Add-to-home-screen support |
 
 ## How it works
-
-Everything lives in `index.html`: markup, CSS and one script.
 
 ### Data model
 
 The app stores **events**, not bar values. Each bar is recomputed from timestamps every 30 seconds, so the bars stay correct after the app has been closed overnight.
 
-```js
-// one event
-{ id: "lq3x9ab12", type: "feed" | "sleep" | "diaper" | "play" | "bath",
-  t: 1790000000000,        // start time, ms since epoch
-  sub: "left",             // feed: bottle|left|right|solids, diaper: wet|dirty|both,
-                           // play: tummy|play|read|cuddle|outside
-  amount: 120,             // bottle feeds only, stored in ml
-  end: 1790003600000 }     // sleep only; null while asleep
-```
+| Table | Holds |
+|---|---|
+| `babies` | name, birthday, `settings` (drain intervals, units, sound) and `look` (portrait options) as JSON |
+| `baby_members` | who can see a baby: `owner` or `caregiver` |
+| `events` | `type` (feed, sleep, diaper, play, bath), `t`, `end_t` (naps), `sub` (bottle, left, wet…), `amount` (ml) |
+| `invites` | single-use codes that expire after 7 days |
 
-The profile holds the name, birthday, units, drain intervals, and the avatar `look` (skin, hair, hairColor, eyes, outfit, style, paci).
+Every table has row-level security, so a signed-in person only ever reads or writes babies they belong to. Creating a baby, accepting an invite and deleting an account go through `SECURITY DEFINER` functions, so those rules can't be skipped.
 
 ### Need math
 
@@ -60,22 +75,14 @@ A bar reaches about 30 when its interval is up (for example, 3 hours after a fee
 - **Energy** counts up from the last wake time. While the baby is asleep, it refills instead.
 - **Social** only drains while the baby is awake, because sleep time is subtracted.
 
-Mood is `0.5 × average + 0.5 × lowest`, so one very low bar pulls the mood down.
+Mood is `0.5 × average + 0.5 × lowest`, so one very low bar pulls the mood down. Intervals are per-baby settings, and the birthday suggests typical values by age.
 
-Intervals are per-baby settings. The birthday suggests typical values by age.
+### Sync and offline
 
-### Storage
-
-There are two backends behind the same functions (`putEvent`, `patchEvent`, `removeEvent`, `saveProfile`):
-
-| Where it runs | Storage |
-|---|---|
-| Standalone (this repo, GitHub Pages, localhost) | `localStorage` on that device only (`ln-events`, `ln-profile`) |
-| As a Claude artifact | A shared document store (`window.claude.use("db")`), synced between caregivers |
-
-In the shared store, events are grouped into one document per day (`days/YYYY-MM-DD`, with events keyed by id). Grouping by day keeps the document count low, and nested merges mean two caregivers logging at the same moment don't overwrite each other.
-
-**For the beta, the main piece of work is replacing that shared store with a real backend.** See [BETA-PLAN.md](BETA-PLAN.md).
+- **Writes are optimistic.** The screen updates first, then the change is sent to Supabase.
+- **Offline writes are queued.** If the phone is offline, the change goes into an outbox in `localStorage` and is sent in order when it reconnects. The app shows "Saved on this phone" while anything is waiting.
+- **Other failures roll back** and show a message.
+- **Live updates.** Other caregivers' changes arrive through Supabase Realtime. The app also reloads the log whenever it comes back to the foreground.
 
 ## Design notes
 

@@ -5,176 +5,75 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#22476E">
 <meta name="description" content="A baby tracker that reads like a life-sim game: needs bars, moodlets and one-tap logging.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Just a Baby">
 <title>Just a Baby</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-<style>
-:root{
-  --bg:#E6EEF2; --ink:#1D2B3A; --muted:#5A6A7A; --card:#FFFFFF; --line:#D3DEE6;
-  --panel:#22476E; --panel2:#2C5A87; --panel-ink:#EEF6FF; --panel-muted:#A9C4DE; --edge:#86C8EA;
-  --gold:#F4B942; --gold-ink:#3A2A05;
-  --studio1:#F7E0C8; --studio2:#E9BE97; --studio3:#D9A67C;
-  --bad:#D9725F; --good:#3E9E5B;
-  --shadow:0 1px 0 rgba(255,255,255,.25) inset, 0 6px 18px rgba(20,40,70,.18);
-  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
-  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --bg:#0F1821; --ink:#E3ECF4; --muted:#93A5B6; --card:#17232F; --line:#26384A;
-    --panel:#14304F; --panel2:#1D4068; --panel-ink:#E8F2FC; --panel-muted:#8FB0CF; --edge:#4E9CC6;
-    --gold:#E9AE3A; --gold-ink:#2A1C02;
-    --studio1:#5B4A5E; --studio2:#3E3448; --studio3:#2C2536;
-    --bad:#E0826F; --good:#5CC27A;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#0F1821; --ink:#E3ECF4; --muted:#93A5B6; --card:#17232F; --line:#26384A;
-  --panel:#14304F; --panel2:#1D4068; --panel-ink:#E8F2FC; --panel-muted:#8FB0CF; --edge:#4E9CC6;
-  --gold:#E9AE3A; --gold-ink:#2A1C02;
-  --studio1:#5B4A5E; --studio2:#3E3448; --studio3:#2C2536;
-  --bad:#E0826F; --good:#5CC27A;
-}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html,body{background:var(--bg)}
-body{margin:0;color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;padding:0 16px calc(100px + env(safe-area-inset-bottom,0px));}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.wrap{max-width:1000px;margin:0 auto}
-
-/* top bar */
-.top{display:flex;align-items:center;gap:10px;padding-block:12px 10px}
-.who{display:flex;flex-direction:column;min-width:0;flex:1}
-.who h1{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.who .age{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.daychip{font-family:var(--display);font-weight:700;background:var(--panel);color:var(--panel-ink);border-radius:12px;padding:5px 11px 3px;text-align:right;line-height:1.05;box-shadow:var(--shadow);flex:none}
-.daychip small{display:block;font-family:var(--body);font-weight:400;font-size:11px;color:var(--panel-muted);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
-.daychip b{font-size:19px;font-variant-numeric:tabular-nums}
-.iconbtn{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;flex:none}
-.iconbtn svg{width:22px;height:22px}
-
-.layout{display:grid;gap:14px;grid-template-columns:1fr}
-@media (min-width:860px){.layout{grid-template-columns:1.05fr 1fr;align-items:start}}
-
-/* portrait */
-.card{border-radius:22px;overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
-.portrait{position:relative;height:clamp(250px,42vh,440px);
-  background:
-    radial-gradient(circle at 18% 22%,rgba(255,255,255,.35) 0 22px,transparent 23px),
-    radial-gradient(circle at 84% 30%,rgba(255,255,255,.22) 0 34px,transparent 35px),
-    radial-gradient(circle at 74% 78%,rgba(255,255,255,.14) 0 18px,transparent 19px),
-    radial-gradient(ellipse at 50% 40%,var(--studio1),var(--studio2) 60%,var(--studio3));}
-.portrait.night::after{content:"";position:absolute;inset:0;background:rgba(18,22,58,.22);pointer-events:none}
-.baby{position:absolute;inset:0;border:0;background:none;padding:0;display:block;width:100%;height:100%}
-.baby svg{display:block;width:100%;height:100%}
-.av .breathe{animation:breathe 4.2s ease-in-out infinite;transform-origin:150px 320px}
-.av .headg{animation:sway 8s ease-in-out infinite;transform-origin:150px 250px}
-.av.sleep .breathe{animation-duration:6s}
-.av .lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:blink 5.8s infinite}
-.av .lid.r{animation-delay:.02s}
-@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.018)}}
-@keyframes sway{0%,100%{transform:rotate(0)}30%{transform:rotate(1.4deg)}70%{transform:rotate(-1.2deg)}}
-@keyframes blink{0%,93%,100%{transform:scaleY(0)}95.5%{transform:scaleY(1)}}
-.speech{position:absolute;left:calc(50% + 70px);top:22px;background:#fff;color:#1D2B3A;font-family:var(--display);font-weight:700;font-size:17px;padding:6px 12px 4px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);white-space:nowrap;transition:opacity .25s,transform .25s;pointer-events:none}
-.speech::after{content:"";position:absolute;left:10px;bottom:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
-.speech.off{opacity:0;transform:translateY(6px)}
-@media (max-width:420px){.speech{left:auto;right:12px}}
-.samplepill{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.9);color:#1D2B3A;border-radius:999px;padding:4px 10px 3px;font-size:12.5px;font-weight:700;max-width:calc(100% - 24px)}
-.status{display:flex;align-items:center;gap:8px;padding:10px 12px;overflow-x:auto;scrollbar-width:none}
-.status::-webkit-scrollbar{display:none}
-.moodtag{display:flex;align-items:center;gap:7px;font-family:var(--display);font-weight:800;font-size:17px;padding-right:6px;flex:none}
-.moodtag i{width:12px;height:12px;border-radius:50%;background:var(--mood,#6BC46B);box-shadow:0 0 0 3px color-mix(in srgb,var(--mood,#6BC46B) 30%,transparent)}
-.moodlet{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:10px;padding:4px 9px 4px 4px;font-size:13px;font-weight:700;white-space:nowrap;flex:none}
-.moodlet .mi{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:13px}
-.moodlet.good .mi{background:var(--good)}
-.moodlet.bad .mi{background:var(--bad)}
-
-/* needs */
-.hud{background:linear-gradient(180deg,var(--panel2),var(--panel));color:var(--panel-ink);border-radius:22px;padding:16px;box-shadow:var(--shadow);border:2px solid color-mix(in srgb,var(--edge) 45%,transparent)}
-.needs{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
-.need .row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.need .ic{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.12);display:grid;place-items:center;flex:none}
-.need .ic svg{width:18px;height:18px}
-.need .nm{font-family:var(--display);font-weight:700;font-size:16px;line-height:1}
-.bar{height:18px;border-radius:999px;background:rgba(0,0,0,.28);box-shadow:0 1px 0 rgba(255,255,255,.12),0 1px 3px rgba(0,0,0,.35) inset;overflow:hidden;padding:2px}
-.bar i{display:block;height:100%;border-radius:999px;background:var(--c);min-width:12px;background-image:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0) 55%,rgba(0,0,0,.08));transition:width .6s ease,background-color .6s}
-.bar.empty i{background:rgba(255,255,255,.18);width:100%!important}
-.need .sub{font-size:12.5px;color:var(--panel-muted);margin-top:4px;min-height:2.6em}
-
-/* action bar */
-.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,var(--panel2),var(--panel));border-top:2px solid color-mix(in srgb,var(--edge) 50%,transparent);box-shadow:0 -6px 20px rgba(10,30,60,.18)}
-.actions{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.act{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;border-radius:14px;padding:8px 2px 6px;background:rgba(255,255,255,.1);color:var(--panel-ink);min-height:64px;box-shadow:0 1px 0 rgba(255,255,255,.18) inset}
-.act svg{width:26px;height:26px}
-.act span{font-family:var(--display);font-weight:700;font-size:14px;line-height:1}
-.act:active{transform:translateY(1px);background:rgba(255,255,255,.18)}
-.act.on{background:var(--gold);color:var(--gold-ink)}
-
-/* sheet */
-.sheetwrap{position:fixed;inset:0;z-index:40;background:rgba(10,20,35,.45);display:flex;align-items:flex-end;justify-content:center}
-.sheet{background:var(--card);color:var(--ink);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto;animation:up .22s ease-out}
-@media (min-width:600px){.sheetwrap{align-items:center}.sheet{border-radius:22px}}
-@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
-.sheet h3{margin:0 0 4px;font-family:var(--display);font-weight:800;font-size:22px;display:flex;align-items:center;gap:10px}
-.sheet h3 svg{width:26px;height:26px}
-.sheet .hint{color:var(--muted);font-size:13.5px;margin:0 0 14px}
-.lbl{display:block;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:9px 13px;font-weight:700;min-height:46px}
-.chip[aria-pressed="true"]{border-color:var(--panel2);background:var(--panel2);color:var(--panel-ink)}
-.chip.big{flex:1 1 30%;min-height:64px;font-family:var(--display);font-size:17px}
-.stepper{display:flex;align-items:center;gap:10px}
-.stepper button{width:48px;height:48px;border-radius:12px;border:2px solid var(--line);background:var(--bg);font-size:22px;font-weight:700}
-.stepper output{font-family:var(--display);font-weight:800;font-size:24px;min-width:96px;text-align:center;font-variant-numeric:tabular-nums}
-.primary{width:100%;margin-top:18px;border:0;border-radius:14px;background:var(--gold);color:var(--gold-ink);font-family:var(--display);font-weight:800;font-size:19px;min-height:56px}
-.ghost{width:100%;margin-top:8px;border:0;background:none;color:var(--muted);min-height:44px}
-input[type=text],input[type=date],input[type=number],input[type=datetime-local]{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:48px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field small{display:block;color:var(--muted);font-size:12.5px;margin-bottom:4px}
-.swatches{display:flex;flex-wrap:wrap;gap:8px}
-.sw{width:40px;height:40px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 2px var(--line)}
-.sw[aria-pressed="true"]{box-shadow:0 0 0 3px var(--panel2)}
-.pv{border-radius:18px;overflow:hidden;height:230px;margin-bottom:4px;background:radial-gradient(ellipse at 50% 40%,var(--studio1),var(--studio2) 60%,var(--studio3))}
-.pv svg{width:100%;height:100%;display:block}
-.toggle{display:flex;align-items:center;gap:10px;min-height:44px}
-.toggle input{width:22px;height:22px}
-.disclaim{font-size:12.5px;color:var(--muted);margin-top:14px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
-@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--bg);border-radius:12px;padding:8px 10px}
-.stat small{display:block;font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
-.stat b{font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums}
-.stat em{font-style:normal;font-size:12px;color:var(--muted);margin-left:4px}
-.events{list-style:none;margin:0;padding:0}
-.ev{display:grid;grid-template-columns:auto 30px 1fr auto;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
-.ev time{white-space:nowrap;min-width:62px;font-variant-numeric:tabular-nums;font-size:13.5px;color:var(--muted)}
-.ev .eic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--bg)}
-.ev .eic svg{width:18px;height:18px}
-.ev .what b{display:block;font-weight:700}
-.ev .what span{font-size:13px;color:var(--muted)}
-.ev .del{border:1px solid var(--line);background:none;border-radius:9px;padding:6px 10px;font-size:12.5px;color:var(--muted);min-height:36px}
-.ev .del.arm{background:var(--bad);border-color:var(--bad);color:#fff}
-.daysep{font-family:var(--display);font-weight:700;font-size:14px;color:var(--muted);padding:12px 0 4px;border-top:1px solid var(--line)}
-.empty{color:var(--muted);font-size:14px;padding:10px 0}
-.foot{font-size:12.5px;color:var(--muted);margin-top:12px}
-
-.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:50;background:#1D2B3A;color:#fff;border-radius:14px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-size:14.5px}
-.toast button{border:0;background:var(--gold);color:var(--gold-ink);border-radius:10px;padding:8px 14px;font-weight:700;min-height:40px}
-
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
-
+<link rel="stylesheet" href="app.css">
 </head>
 <body>
+
+<!-- Loading -->
+<div class="wrap screen" id="bootScreen"><p style="color:var(--muted)">Loading…</p></div>
+
+<!-- Sign in -->
+<div class="wrap screen" id="authScreen" hidden>
+  <div class="panel">
+    <div class="pv" id="authPortrait"></div>
+    <h2>Just a Baby</h2>
+    <p>Feeds, naps and diapers as four simple needs bars. Sign in with your email, no password needed.</p>
+    <form id="emailForm" novalidate>
+      <label class="lbl" for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" required>
+      <button class="primary" type="submit" id="emailBtn">Email me a sign-in link</button>
+    </form>
+    <form id="codeForm" hidden novalidate>
+      <p id="sentTo"></p>
+      <label class="lbl" for="otp">Or type the 6-digit code from the email</label>
+      <input type="text" id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="primary" type="submit" id="codeBtn">Sign in</button>
+      <button class="linkbtn" type="button" id="changeEmail">Use a different email</button>
+    </form>
+    <div class="formerr" id="authErr" role="alert"></div>
+    <p class="disclaim">By signing in you agree to the <a href="privacy.html">privacy notice</a>.</p>
+  </div>
+</div>
+
+<!-- Add a baby -->
+<div class="wrap screen" id="setupScreen" hidden>
+  <div class="panel">
+    <div class="pv" id="setupPortrait"></div>
+    <h2>Add your baby</h2>
+    <p>You can change the name, look and settings any time.</p>
+    <form id="setupForm" novalidate>
+      <div class="field"><label class="lbl" for="newName">Baby's name or nickname</label><input type="text" id="newName" maxlength="24" autocomplete="off" required></div>
+      <div class="field"><label class="lbl" for="newBirth">Birthday (optional)</label><input type="date" id="newBirth"></div>
+      <label class="toggle" id="importRow" hidden><input type="checkbox" id="importLocal" checked> <span id="importLbl">Bring over entries saved on this device</span></label>
+      <button class="primary" type="submit" id="setupBtn">Start tracking</button>
+    </form>
+    <div class="formerr" id="setupErr" role="alert"></div>
+    <div class="divider"></div>
+    <p style="font-size:14px">Joining a partner's baby instead? Open the invite link they sent you on this device.</p>
+    <button class="linkbtn" type="button" id="setupCancel" hidden>Back to the app</button>
+    <button class="linkbtn" type="button" id="setupSignOut">Sign out</button>
+  </div>
+</div>
+
+<!-- The app -->
+<div id="appScreen" hidden>
 <div class="wrap">
   <header class="top">
     <div class="who">
-      <h1 id="babyName">Baby</h1>
-      <div class="age" id="ageLine">No birthday yet</div>
+      <button class="namebtn" id="nameBtn" aria-label="Switch or add a baby">
+        <h1 id="babyName">Baby</h1>
+        <div class="age" id="ageLine">No birthday yet</div>
+      </button>
     </div>
     <div class="daychip"><small id="clockLbl">Morning</small><b id="dayCount">Day 1</b></div>
     <button class="iconbtn" id="historyBtn" aria-label="History">
@@ -207,657 +106,14 @@ input[type=text],input[type=date],input[type=number],input[type=datetime-local]{
 <nav class="actionbar" aria-label="Log something">
   <div class="actions" id="actions"></div>
 </nav>
+</div>
 
 <div class="sheetwrap" id="sheetWrap" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastUndo">Undo</button></div>
+<div class="offline" id="offlinePill" hidden>Saved on this phone. Syncing when you're back online.</div>
 
-<script>
-(function(){
-const $=s=>document.querySelector(s);
-const MIN=60000, HR=3600000, DAY=86400000;
-
-/* ---------- icons ---------- */
-const IC={
- bottle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M10.5 2v3l-2 2.5V20a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7.5l-2-2.5V2"/><path d="M8.5 12h7M8.5 16h7"/></svg>',
- moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
- sun:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>',
- drop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></svg>',
- diaper:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7h18v3c0 5-4 9-9 9s-9-4-9-9z"/><path d="M8 10c0 2.5 1.8 4.5 4 4.5s4-2 4-4.5"/></svg>',
- heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.3-8.6-8.7C2.2 8 4.2 5 7.2 5c1.9 0 3.2 1 4.8 2.8C13.6 6 14.9 5 16.8 5c3 0 5 3 3.8 6.3C19 15.7 12 20 12 20z"/></svg>',
- rattle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l7 7M18 16l-2 2"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>',
- tub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2"/><circle cx="13" cy="8" r="1"/><circle cx="16" cy="6" r="1.3"/></svg>'
-};
-const TYPE_ICON={feed:'bottle',sleep:'moon',diaper:'diaper',play:'rattle',bath:'tub'};
-const SUBS={
- feed:{bottle:'Bottle',left:'Left side',right:'Right side',solids:'Solids'},
- diaper:{wet:'Wet',dirty:'Dirty',both:'Wet + dirty'},
- play:{tummy:'Tummy time',play:'Playtime',read:'Story time',cuddle:'Cuddles',outside:'Outside'}
-};
-const TYPE_LABEL={feed:'Feed',sleep:'Sleep',diaper:'Diaper',play:'Play',bath:'Bath'};
-
-/* ---------- look options ---------- */
-const SKIN=['#F6D8C4','#EDC1A0','#D9A07A','#BF8158','#955D3E','#6A412B'];
-const HAIRC=['#2A1A12','#5E3A22','#A06A3A','#E0BD72','#B8532E','#E9DFC8'];
-const EYES=['#4A3224','#4C79A8','#58804C','#7A6A4A'];
-const OUTFIT=['#8FC0E3','#F0A7B8','#EDCB63','#95CFA0','#BFA8E0','#8E3848'];
-const HAIRS={fuzz:'Peach fuzz',wisps:'Wisps',curls:'Curls',buns:'Space buns',puffs:'Puffs + bows',braids:'Braids'};
-const OUTFITS={onesie:'Onesie',stripes:'Striped tee',stars:'Star sleeper',gingham:'Gingham romper',overalls:'Overalls'};
-
-/* ---------- state ---------- */
-const DEFAULT_PROFILE={name:'Baby',birth:'',unit:'ml',feedH:3,wakeH:1.5,diaperH:3,playH:3,sound:true,lastAmount:90,
-  look:{skin:1,hair:'wisps',hairColor:1,eyes:0,outfit:0,style:'onesie',paci:false}};
-let profile=clone(DEFAULT_PROFILE);
-let events={};
-let db=null, readOnly=false;
-function clone(o){return JSON.parse(JSON.stringify(o))}
-function mergeProfile(p){const out=clone(DEFAULT_PROFILE);if(p){Object.assign(out,p);out.look=Object.assign(clone(DEFAULT_PROFILE.look),p.look||{});}
-  if(!HAIRS[out.look.hair])out.look.hair=out.look.hair==='none'?'fuzz':'wisps';
-  if(!OUTFITS[out.look.style])out.look.style='onesie';
-  return out}
-function loadLocal(){try{const e=localStorage.getItem('ln-events');if(e)events=JSON.parse(e)||{};const p=localStorage.getItem('ln-profile');if(p)profile=mergeProfile(JSON.parse(p));}catch(_){}}
-function saveLocal(){if(db)return;try{localStorage.setItem('ln-events',JSON.stringify(events));localStorage.setItem('ln-profile',JSON.stringify(profile));}catch(_){}}
-
-function sampleEvents(){
-  const n=Date.now(), o={};
-  const add=(id,type,ago,extra)=>{o[id]=Object.assign({id,type,t:n-ago},extra||{})};
-  add('s1','feed',7.2*HR,{sub:'left'});add('s2','diaper',6.8*HR,{sub:'wet'});add('s3','sleep',6.4*HR,{end:n-4.9*HR});
-  add('s4','feed',4.6*HR,{sub:'bottle',amount:90});add('s5','play',4.1*HR,{sub:'tummy'});add('s6','diaper',3.6*HR,{sub:'dirty'});
-  add('s7','sleep',3.2*HR,{end:n-1.9*HR});add('s8','feed',1.1*HR,{sub:'right'});add('s9','bath',1.3*HR,{});
-  add('s10','diaper',55*MIN,{sub:'wet'});add('s11','play',25*MIN,{sub:'read'});
-  return o;
-}
-const sample=sampleEvents();
-function usingSample(){return Object.keys(events).length===0}
-function all(){const src=usingSample()?sample:events;return Object.values(src).filter(e=>e&&e.t).sort((a,b)=>b.t-a.t)}
-
-/* ---------- helpers ---------- */
-function dayKey(t){const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
-function dur(ms){ms=Math.max(0,ms);const m=Math.round(ms/MIN);if(m<1)return 'under a minute';if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h'}
-function ago(t){const ms=Date.now()-t;return ms<MIN?'just now':dur(ms)+' ago'}
-function clock(t){return new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function fmtAmt(ml){if(ml==null)return '';return profile.unit==='oz'?(Math.round(ml/29.5735*2)/2)+' oz':Math.round(ml)+' ml'}
-function colorFor(v){return `hsl(${clamp(v*1.15,14,118)} 64% 50%)`}
-function mix(a,b,t){const pa=parseInt(a.slice(1),16),pb=parseInt(b.slice(1),16);const r=Math.round((pa>>16)*(1-t)+(pb>>16)*t),g=Math.round((pa>>8&255)*(1-t)+(pb>>8&255)*t),bl=Math.round((pa&255)*(1-t)+(pb&255)*t);return '#'+((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1)}
-
-/* ---------- need math ---------- */
-function lastOf(type){return all().find(e=>e.type===type)}
-function sleepingNow(){const s=lastOf('sleep');return s&&!s.end?s:null}
-function lastWake(){let m=0;for(const e of all())if(e.type==='sleep'&&e.end)m=Math.max(m,e.end);return m||null}
-function sleepBetween(a,b){let s=0;for(const e of all()){if(e.type!=='sleep')continue;const st=Math.max(a,e.t),en=Math.min(b,e.end||Date.now());if(en>st)s+=en-st}return s}
-function decay(elapsed,intervalH){return clamp(100-elapsed/(intervalH*HR)*70,0,100)}
-function detail(e){
-  if(e.type==='feed')return (SUBS.feed[e.sub]||'Feed')+(e.amount?' · '+fmtAmt(e.amount):'');
-  if(e.type==='sleep')return e.end?dur(e.end-e.t):'Still asleep';
-  if(SUBS[e.type])return SUBS[e.type][e.sub]||'';
-  return '';
-}
-function computeNeeds(){
-  const n=Date.now(), out={};
-  const f=lastOf('feed');
-  out.hunger=!f?{v:null,sub:'No feeds logged yet'}:{v:decay(n-f.t,profile.feedH),sub:`Fed ${ago(f.t)} · next around ${clock(f.t+profile.feedH*HR)}`};
-  const s=sleepingNow();
-  if(s){const sl=n-s.t;out.energy={v:clamp(40+sl/HR*60,40,100),sub:`Asleep for ${dur(sl)}`,sleeping:true};}
-  else{const w=lastWake();if(!w)out.energy={v:null,sub:'No sleep logged yet'};else{const aw=n-w;out.energy={v:decay(aw,profile.wakeH),sub:`Awake ${dur(aw)}`+(aw>profile.wakeH*HR?' · nap window is open':` · nap around ${clock(w+profile.wakeH*HR)}`)};}}
-  const d=lastOf('diaper');
-  out.hygiene=!d?{v:null,sub:'No changes logged yet'}:{v:decay(n-d.t,profile.diaperH),sub:`Changed ${ago(d.t)} · ${(SUBS.diaper[d.sub]||'').toLowerCase()}`};
-  const p=lastOf('play');
-  if(!p)out.social={v:null,sub:'No play logged yet'};
-  else{const el=(n-p.t)-sleepBetween(p.t,n);out.social={v:decay(el,profile.playH),sub:`${SUBS.play[p.sub]||'Play'} ${ago(p.t)}`};}
-  return out;
-}
-function mood(needs){
-  if(needs.energy.sleeping)return {label:'Sleeping',v:85,face:'sleep'};
-  const vs=['hunger','energy','hygiene','social'].map(k=>needs[k].v).filter(v=>v!=null);
-  if(!vs.length)return {label:'Content',v:70,face:'calm'};
-  const avg=vs.reduce((a,b)=>a+b,0)/vs.length, mn=Math.min(...vs), sc=avg*.5+mn*.5;
-  if(sc>=70)return {label:'Happy',v:sc,face:'happy'};
-  if(sc>=45)return {label:'Content',v:sc,face:'calm'};
-  if(sc>=25)return {label:'Fussy',v:sc,face:'fuss'};
-  return {label:'Needs you',v:sc,face:'cry'};
-}
-function moodlets(needs){
-  const n=Date.now(), L=[];
-  const f=lastOf('feed'), d=lastOf('diaper'), p=lastOf('play'), b=lastOf('bath'), s=sleepingNow();
-  if(s)L.push(['good','z','Snoozing']);
-  if(f&&n-f.t<45*MIN)L.push(['good','+','Full Tummy']);
-  if(needs.hunger.v!=null&&needs.hunger.v<30)L.push(['bad','!','Getting Hungry']);
-  if(d&&n-d.t<30*MIN)L.push(['good','+','Fresh Diaper']);
-  if(needs.hygiene.v!=null&&needs.hygiene.v<30)L.push(['bad','!','Diaper Check']);
-  const ls=all().find(e=>e.type==='sleep'&&e.end);
-  if(!s&&ls&&n-ls.end<90*MIN&&ls.end-ls.t>=HR)L.push(['good','+','Well Rested']);
-  if(!s&&needs.energy.v!=null&&needs.energy.v<30)L.push(['bad','!','Sleepy Eyes']);
-  if(p&&n-p.t<60*MIN)L.push(['good','+',{tummy:'Strong Neck',play:'Playful',read:'Story Time',cuddle:'Snuggled',outside:'Fresh Air'}[p.sub]||'Playful']);
-  if(!s&&needs.social.v!=null&&needs.social.v<30)L.push(['bad','!','Wants Company']);
-  if(b&&n-b.t<3*HR)L.push(['good','+','Squeaky Clean']);
-  if(['hunger','energy','hygiene','social'].every(k=>needs[k].v!=null&&needs[k].v>=60))L.push(['good','+','Happy Baby']);
-  return L.sort((a,b)=>(a[0]==='bad'?0:1)-(b[0]==='bad'?0:1));
-}
-
-/* ---------- portrait ---------- */
-let avN=0;
-function qp(p0,c,p2,t){const u=1-t;return [u*u*p0[0]+2*u*t*c[0]+t*t*p2[0],u*u*p0[1]+2*u*t*c[1]+t*t*p2[1]]}
-function avatarSVG(look,face){
-  const P='av'+(++avN);
-  const sk=SKIN[look.skin]||SKIN[1], skL=mix(sk,'#FFF6EE',.42), skS=mix(sk,'#6B2F25',.36), skD=mix(sk,'#3E1A14',.6);
-  const lip=mix(sk,'#C4545F',.5), lipL=mix(lip,'#FFFFFF',.18);
-  const hc=HAIRC[look.hairColor]||HAIRC[1], hcL=mix(hc,'#FFFFFF',.32), hcD=mix(hc,'#000000',.4);
-  const ey=EYES[look.eyes]||EYES[0], eyL=mix(ey,'#FFFFFF',.5), eyD=mix(ey,'#000000',.5);
-  const of=OUTFIT[look.outfit]||OUTFIT[0], ofL=mix(of,'#FFFFFF',.6), ofD=mix(of,'#000000',.28), ofP=mix(of,'#FFFFFF',.78);
-  const HEAD='M150 50C212 50 246 98 246 152C246 208 206 248 150 248C94 248 54 208 54 152C54 98 88 50 150 50Z';
-  const TORSO='M26 330C26 282 72 262 122 257Q150 270 178 257C228 262 274 282 274 330Z';
-  const sleep=face==='sleep';
-
-  /* defs */
-  let defs=`<defs>
-   <radialGradient id="${P}sk" cx=".42" cy=".36" r=".78"><stop offset="0" stop-color="${skL}"/><stop offset=".55" stop-color="${sk}"/><stop offset="1" stop-color="${skS}"/></radialGradient>
-   <radialGradient id="${P}ear" cx=".35" cy=".4" r=".8"><stop offset="0" stop-color="${sk}"/><stop offset="1" stop-color="${skS}"/></radialGradient>
-   <linearGradient id="${P}neck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${skD}" stop-opacity=".7"/><stop offset=".45" stop-color="${skS}" stop-opacity=".25"/><stop offset="1" stop-color="${sk}" stop-opacity="0"/></linearGradient>
-   <radialGradient id="${P}bl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF7D86" stop-opacity=".5"/><stop offset="1" stop-color="#FF7D86" stop-opacity="0"/></radialGradient>
-   <radialGradient id="${P}scl" cx=".5" cy=".6" r=".6"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".8" stop-color="#F1E8E4"/><stop offset="1" stop-color="#D9C9C2"/></radialGradient>
-   <radialGradient id="${P}iris" cx=".5" cy=".55" r=".5"><stop offset="0" stop-color="${eyL}"/><stop offset=".55" stop-color="${ey}"/><stop offset=".92" stop-color="${eyD}"/><stop offset="1" stop-color="#140C08"/></radialGradient>
-   <linearGradient id="${P}lids" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2418" stop-opacity=".5"/><stop offset=".45" stop-color="#4A2418" stop-opacity="0"/></linearGradient>
-   <radialGradient id="${P}hair" cx=".42" cy=".2" r=".85"><stop offset="0" stop-color="${hcL}"/><stop offset=".5" stop-color="${hc}"/><stop offset="1" stop-color="${hcD}"/></radialGradient>
-   <radialGradient id="${P}ball" cx=".38" cy=".32" r=".7"><stop offset="0" stop-color="${hcL}"/><stop offset=".6" stop-color="${hc}"/><stop offset="1" stop-color="${hcD}"/></radialGradient>
-   <linearGradient id="${P}cloth" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset=".3" stop-color="#000" stop-opacity="0"/><stop offset=".7" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>
-   <linearGradient id="${P}clothV" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".4" stop-color="#fff" stop-opacity="0"/></linearGradient>
-   <radialGradient id="${P}paci" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="${ofL}"/><stop offset="1" stop-color="${of}"/></radialGradient>
-   <radialGradient id="${P}knob" cx=".35" cy=".3" r=".7"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D8D2CC"/></radialGradient>
-   <pattern id="${P}stripes" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="${ofP}"/><rect width="16" height="7" fill="${of}"/></pattern>
-   <pattern id="${P}stars" width="34" height="34" patternUnits="userSpaceOnUse"><rect width="34" height="34" fill="${ofP}"/><path d="M9 3l1.9 4 4.3.5-3.2 2.9.9 4.3L9 12.5l-3.9 2.2.9-4.3L2.8 7.5 7.1 7z" fill="${of}"/><path d="M26 19l1.9 4 4.3.5-3.2 2.9.9 4.3-3.9-2.2-3.9 2.2.9-4.3-3.2-2.9 4.3-.5z" fill="${of}"/></pattern>
-   <pattern id="${P}ging" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="${ofP}"/><rect width="9" height="18" fill="${of}" opacity=".45"/><rect width="18" height="9" fill="${of}" opacity=".45"/></pattern>
-   <clipPath id="${P}hc"><path d="${HEAD}"/></clipPath>
-   <filter id="${P}b2" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
-   <filter id="${P}b6" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
-   <filter id="${P}b12" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="12"/></filter>
-  </defs>`;
-
-  /* body + clothing */
-  const st=look.style;
-  let body=`<ellipse cx="150" cy="322" rx="120" ry="18" fill="#000" opacity=".12" filter="url(#${P}b12)"/>`;
-  body+=`<rect x="120" y="215" width="60" height="70" rx="24" fill="${sk}"/><rect x="120" y="215" width="60" height="70" rx="24" fill="url(#${P}neck)"/>`;
-  if(st==='gingham'){
-    body+=`<path d="${TORSO}" fill="url(#${P}sk)"/><path d="${TORSO}" fill="url(#${P}cloth)"/>`;
-    body+=`<path d="M86 330L94 290Q150 302 206 290L214 330Z" fill="url(#${P}ging)"/><path d="M86 330L94 290Q150 302 206 290L214 330Z" fill="url(#${P}cloth)"/>`;
-    body+=`<path d="M104 292L92 262" stroke="url(#${P}ging)" stroke-width="16" stroke-linecap="round"/><path d="M196 292L208 262" stroke="url(#${P}ging)" stroke-width="16" stroke-linecap="round"/>`;
-    body+=`<path d="M94 292Q150 304 206 292" stroke="${ofD}" stroke-width="3" fill="none" opacity=".5"/><circle cx="132" cy="306" r="3.5" fill="#fff" stroke="${ofD}"/><circle cx="168" cy="306" r="3.5" fill="#fff" stroke="${ofD}"/>`;
-  } else if(st==='overalls'){
-    const shirt=mix(of,'#FFFFFF',.72);
-    body+=`<path d="${TORSO}" fill="${shirt}"/><path d="${TORSO}" fill="url(#${P}cloth)"/>`;
-    body+=`<path d="M104 262Q116 272 128 262Q140 272 150 266Q160 272 172 262Q184 272 196 262" stroke="${mix(shirt,'#000',.1)}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
-    body+=`<path d="M92 330L98 292L202 292L208 330Z" fill="${of}"/><path d="M92 330L98 292L202 292L208 330Z" fill="url(#${P}cloth)"/>`;
-    body+=`<path d="M110 294L100 264" stroke="${of}" stroke-width="15" stroke-linecap="round"/><path d="M190 294L200 264" stroke="${of}" stroke-width="15" stroke-linecap="round"/>`;
-    body+=`<circle cx="112" cy="298" r="5.5" fill="#E7C27A" stroke="#A9803A"/><circle cx="188" cy="298" r="5.5" fill="#E7C27A" stroke="#A9803A"/><rect x="128" y="302" width="44" height="22" rx="4" fill="none" stroke="${ofD}" stroke-width="2" stroke-dasharray="4 3"/>`;
-  } else {
-    const fill=st==='stripes'?`url(#${P}stripes)`:st==='stars'?`url(#${P}stars)`:of;
-    body+=`<path d="${TORSO}" fill="${fill}"/><path d="${TORSO}" fill="url(#${P}cloth)"/><path d="${TORSO}" fill="url(#${P}clothV)"/>`;
-    const trim=st==='onesie'?ofD:of;
-    body+=`<path d="M122 257Q150 272 178 257" stroke="${trim}" stroke-width="6" fill="none" stroke-linecap="round" opacity=".85"/>`;
-    if(st==='onesie')body+=`<circle cx="150" cy="292" r="3.5" fill="${ofP}"/><circle cx="150" cy="310" r="3.5" fill="${ofP}"/>`;
-  }
-  body+=`<ellipse cx="150" cy="258" rx="44" ry="12" fill="${skD}" opacity=".35" filter="url(#${P}b6)"/>`;
-
-  /* hair behind head */
-  let behind='';
-  if(look.hair==='puffs'){
-    [[66,84],[234,84]].forEach(([x,y],i)=>{const s=i?1:-1;
-      behind+=`<g>${[[0,0,24],[s*14,-12,15],[s*16,10,14],[-s*4,-18,13],[s*2,18,13],[s*22,-2,12]].map(c=>`<circle cx="${x+c[0]}" cy="${y+c[1]}" r="${c[2]}" fill="url(#${P}ball)"/>`).join('')}</g>`;});
-  }
-
-  /* ears */
-  let ears='';
-  [[58,1],[242,-1]].forEach(([x,s])=>{ears+=`<ellipse cx="${x}" cy="164" rx="17" ry="23" fill="url(#${P}ear)"/><path d="M${x+s*4} 150Q${x-s*8} 164 ${x+s*2} 180" stroke="${skS}" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>`;});
-
-  /* head */
-  let head=`<path d="${HEAD}" fill="url(#${P}sk)"/>
-   <g clip-path="url(#${P}hc)">
-    <ellipse cx="130" cy="92" rx="46" ry="26" fill="#fff" opacity=".22" filter="url(#${P}b12)"/>
-    <ellipse cx="150" cy="258" rx="90" ry="30" fill="${skS}" opacity=".35" filter="url(#${P}b12)"/>
-    <ellipse cx="56" cy="160" rx="20" ry="60" fill="${skS}" opacity=".25" filter="url(#${P}b12)"/>
-    <ellipse cx="244" cy="160" rx="20" ry="60" fill="${skS}" opacity=".25" filter="url(#${P}b12)"/>
-   </g>`;
-  const blushO=face==='happy'?1:face==='cry'?1.1:.8;
-  head+=`<ellipse cx="102" cy="204" rx="32" ry="22" fill="url(#${P}bl)" opacity="${blushO}"/><ellipse cx="198" cy="204" rx="32" ry="22" fill="url(#${P}bl)" opacity="${blushO}"/>`;
-
-  /* eyes */
-  function eye(x,y,side){ // side: -1 left eye, 1 right eye
-    const w=23;
-    if(face==='sleep'){
-      let g=`<path d="M${x-w} ${y-2}Q${x} ${y+12} ${x+w} ${y-2}" stroke="${skD}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-      g+=`<path d="M${x-w+2} ${y-6}Q${x} ${y-12} ${x+w-2} ${y-6}" stroke="${skS}" stroke-width="1.6" fill="none" opacity=".45"/>`;
-      [0.12,0.26,0.4].forEach(t=>{const tt=side<0?t:1-t;const pt=qp([x-w,y-2],[x,y+12],[x+w,y-2],tt);g+=`<path d="M${pt[0]} ${pt[1]}l${side*-3} 5" stroke="${skD}" stroke-width="1.6" stroke-linecap="round"/>`});
-      return g;
-    }
-    if(face==='cry'){
-      return `<path d="M${x-w+2} ${y+2}Q${x} ${y-10} ${x+w-2} ${y+2}" stroke="${skD}" stroke-width="3.4" fill="none" stroke-linecap="round"/>
-        <path d="M${x-w+6} ${y-10}Q${x} ${y-18} ${x+w-6} ${y-10}" stroke="${skS}" stroke-width="2" fill="none" opacity=".5"/>
-        <path d="M${x+side*-18} ${y+10}q-4 12 0 18q5-6 0-18z" fill="#CDEBFF" opacity=".9"/>`;
-    }
-    const top=face==='happy'?11:18, bot=face==='happy'?5:14;
-    const cT=[x,y-2*top], cB=[x,y+2*bot];
-    const shape=`M${x-w} ${y}Q${cT[0]} ${cT[1]} ${x+w} ${y}Q${cB[0]} ${cB[1]} ${x-w} ${y}Z`;
-    const cid=P+'e'+(side<0?'l':'r');
-    let g=`<clipPath id="${cid}"><path d="${shape}"/></clipPath>`;
-    g+=`<ellipse cx="${x}" cy="${y-top-10}" rx="${w+4}" ry="10" fill="${skS}" opacity=".28" filter="url(#${P}b6)"/>`;
-    g+=`<path d="${shape}" fill="url(#${P}scl)"/>`;
-    g+=`<g clip-path="url(#${cid})">
-         <circle cx="${x+side*1.5}" cy="${y+1}" r="15.5" fill="url(#${P}iris)"/>
-         <circle cx="${x+side*1.5}" cy="${y+1}" r="6.5" fill="#100907"/>
-         <path d="${shape}" fill="url(#${P}lids)"/>
-         <circle cx="${x-5}" cy="${y-5}" r="4.4" fill="#fff" opacity=".95"/>
-         <circle cx="${x+6}" cy="${y+6}" r="1.9" fill="#fff" opacity=".7"/>
-         <rect class="lid${side>0?' r':''}" x="${x-w-2}" y="${y-2*top}" width="${2*w+4}" height="${2*top+2*bot+2}" fill="${mix(sk,skS,.2)}"/>
-       </g>`;
-    g+=`<path d="M${x-w} ${y}Q${cT[0]} ${cT[1]} ${x+w} ${y}" stroke="${skD}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-    g+=`<path d="M${x-w+4} ${y+2}Q${cB[0]} ${cB[1]-2} ${x+w-4} ${y+2}" stroke="${skS}" stroke-width="1.3" fill="none" opacity=".5"/>`;
-    g+=`<path d="M${x-w+4} ${y-top-6}Q${x} ${y-2*top-10} ${x+w-4} ${y-top-6}" stroke="${skS}" stroke-width="1.8" fill="none" opacity=".4"/>`;
-    [0.04,0.13,0.24].forEach((t,i)=>{const tt=side<0?t:1-t;const pt=qp([x-w,y],cT,[x+w,y],tt);g+=`<path d="M${pt[0]} ${pt[1]}q${side*-4} -3 ${side*-5} -${6-i}" stroke="${skD}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`});
-    if(face==='happy')g+=`<path d="M${x-w+2} ${y+10}Q${x} ${y+2} ${x+w-2} ${y+10}" stroke="${skS}" stroke-width="2" fill="none" opacity=".45"/>`;
-    return g;
-  }
-  const EY=face==='happy'?160:158;
-  let eyes=eye(111,EY,-1)+eye(189,EY,1);
-
-  /* brows */
-  const bc=mix(hc,sk,.45);
-  let brows='';
-  [[111,-1],[189,1]].forEach(([x,s])=>{
-    let inner=s<0?x+18:x-18, outer=s<0?x-18:x+18, iy=122, oy=124;
-    if(face==='fuss'||face==='cry'){iy=114;oy=126}
-    if(face==='happy'){iy=121;oy=121}
-    brows+=`<path d="M${outer} ${oy}Q${x} ${Math.min(iy,oy)-8} ${inner} ${iy}" stroke="${bc}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".5" filter="url(#${P}b2)"/>`;
-  });
-
-  /* nose */
-  let nose=`<ellipse cx="150" cy="202" rx="17" ry="7" fill="${skS}" opacity=".4" filter="url(#${P}b2)"/>
-   <ellipse cx="150" cy="191" rx="10" ry="7" fill="${skL}" opacity=".3" filter="url(#${P}b2)"/>
-   <ellipse cx="142.5" cy="198" rx="3.6" ry="2.3" fill="${skD}" opacity=".5"/><ellipse cx="157.5" cy="198" rx="3.6" ry="2.3" fill="${skD}" opacity=".5"/>
-   <ellipse cx="148" cy="188" rx="3.5" ry="2.4" fill="#fff" opacity=".35" filter="url(#${P}b2)"/>`;
-
-  /* mouth */
-  let mouth='';
-  const chin=`<ellipse cx="150" cy="240" rx="18" ry="5" fill="${skS}" opacity=".28" filter="url(#${P}b2)"/>`;
-  if(face==='happy'){
-    mouth=`<path d="M127 214Q150 246 173 214Q150 222 127 214Z" fill="#6A2331"/>
-      <clipPath id="${P}m"><path d="M127 214Q150 246 173 214Q150 222 127 214Z"/></clipPath>
-      <ellipse cx="150" cy="233" rx="14" ry="7" fill="#E27482" clip-path="url(#${P}m)"/>
-      <path d="M127 214Q150 222 173 214" stroke="${lip}" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M127 214Q150 246 173 214" stroke="${lipL}" stroke-width="2.4" fill="none" opacity=".8"/>
-      <path d="M122 210q-3 5 1 9M178 210q3 5-1 9" stroke="${skS}" stroke-width="2" fill="none" opacity=".45" stroke-linecap="round"/>`;
-  } else if(face==='cry'){
-    mouth=`<path d="M134 215Q150 210 166 215Q171 240 150 245Q129 240 134 215Z" fill="#6A2331"/>
-      <ellipse cx="150" cy="238" rx="10" ry="5" fill="#E27482"/>
-      <path d="M134 215Q150 210 166 215" stroke="${lip}" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M134 216Q129 240 150 245Q171 240 166 216" stroke="${lipL}" stroke-width="2.4" fill="none" opacity=".8"/>`;
-  } else if(face==='fuss'){
-    mouth=`<path d="M136 223Q143 217 150 219Q157 217 164 223Q150 222 136 223Z" fill="${lip}"/>
-      <path d="M139 224Q150 236 161 224Q150 226 139 224Z" fill="${lipL}"/>
-      <path d="M136 223Q150 220 164 223" stroke="${skD}" stroke-width="1.6" fill="none" opacity=".75"/>
-      <ellipse cx="150" cy="229" rx="5" ry="1.5" fill="#fff" opacity=".35"/>`;
-  } else if(face==='sleep'){
-    mouth=`<path d="M140 221Q145 217 150 219Q155 217 160 221Q150 223 140 221Z" fill="${lip}"/>
-      <path d="M142 222Q150 229 158 222Q150 224 142 222Z" fill="${lipL}"/>
-      <path d="M140 221Q150 224 160 221" stroke="${skD}" stroke-width="1.5" fill="none" opacity=".6"/>`;
-  } else {
-    mouth=`<path d="M135 219Q142 213 150 216Q158 213 165 219Q150 222 135 219Z" fill="${lip}"/>
-      <path d="M137 220Q150 232 163 220Q150 223 137 220Z" fill="${lipL}"/>
-      <path d="M135 219Q150 224 165 219" stroke="${skD}" stroke-width="1.6" fill="none" opacity=".7"/>
-      <ellipse cx="150" cy="226" rx="5" ry="1.5" fill="#fff" opacity=".35"/>`;
-  }
-  mouth=chin+mouth;
-  if(look.paci&&(face==='calm'||face==='fuss'||face==='sleep')){
-    mouth+=`<ellipse cx="152" cy="228" rx="28" ry="19" fill="#000" opacity=".18" filter="url(#${P}b2)"/>
-      <ellipse cx="150" cy="222" rx="28" ry="19" fill="url(#${P}paci)" stroke="${ofD}" stroke-width="1.4"/>
-      <ellipse cx="143" cy="214" rx="12" ry="5" fill="#fff" opacity=".45"/>
-      <circle cx="150" cy="223" r="9.5" fill="url(#${P}knob)"/><circle cx="147" cy="220" r="3" fill="#fff" opacity=".9"/>
-      <circle cx="141" cy="224" r="2" fill="${ofD}" opacity=".6"/><circle cx="159" cy="224" r="2" fill="${ofD}" opacity=".6"/>`;
-  }
-
-  /* hair on top */
-  const CAP='M56 150C52 92 92 44 150 44C208 44 248 92 244 150C236 118 214 96 186 92C172 90 160 94 150 99C140 94 128 90 114 92C86 96 64 118 56 150Z';
-  const FUZZ='M54 150C50 88 92 46 150 46C208 46 250 88 246 150C232 110 196 90 150 90C104 90 68 110 54 150Z';
-  function strands(n,op){let s='';for(let i=0;i<n;i++){const k=i/(n-1);
-      s+=`<path d="M148 97Q${118-k*40} ${54+k*10} ${64+k*6} ${140-k*50}" stroke="${i%2?hcL:hcD}" stroke-width="1.4" fill="none" opacity="${op}"/>`;
-      s+=`<path d="M152 97Q${182+k*40} ${54+k*10} ${236-k*6} ${140-k*50}" stroke="${i%2?hcD:hcL}" stroke-width="1.4" fill="none" opacity="${op}"/>`;}return s}
-  let hair='';
-  const h=look.hair;
-  if(h==='fuzz'||h==='wisps'){
-    hair=`<g clip-path="url(#${P}hc)"><path d="${FUZZ}" fill="${hc}" opacity="${h==='fuzz'?.3:.5}" filter="url(#${P}b2)"/></g>`;
-    if(h==='wisps')hair+=`<g fill="none" stroke="url(#${P}hair)" stroke-width="2.4" opacity=".85" stroke-linecap="round">
-      <path d="M150 50c-10-14 2-24 14-20-9 3-10 10-4 14"/><path d="M134 52c-6-10-2-18 6-20"/><path d="M168 54c6-9 14-11 20-8"/>
-      <path d="M120 58c-4-7-2-12 3-14"/><path d="M180 60c5-6 10-7 14-5"/></g>`;
-  } else if(h==='curls'){
-    hair=`<path d="${FUZZ}" fill="url(#${P}hair)"/>`;
-    const ring=[];for(let a=192;a<=348;a+=13){const r=a*Math.PI/180;ring.push([150+Math.cos(r)*94,138+Math.sin(r)*90,13+((a/13)%3)])}
-    [[150,52,15],[122,58,14],[178,58,14],[104,72,12],[196,72,12],[136,70,11],[164,70,11]].forEach(c=>ring.push(c));
-    hair+=ring.map(c=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="${c[2]}" fill="url(#${P}ball)"/><path d="M${(c[0]-c[2]*.5).toFixed(1)} ${c[1].toFixed(1)}a${c[2]*.5} ${c[2]*.5} 0 1 1 ${c[2]*.6} ${c[2]*.35}" stroke="${hcD}" stroke-width="1.3" fill="none" opacity=".45"/>`).join('');
-  } else {
-    hair=`<path d="${CAP}" fill="url(#${P}hair)"/>`+strands(7,.35);
-    hair+=`<path d="M150 99L150 46" stroke="${hcD}" stroke-width="1.6" opacity=".5"/>`;
-    hair+=`<path d="M104 94q-3-6 1-10M196 94q3-6-1-10M88 104q-4-5-1-10M212 104q4-5 1-10" stroke="${hc}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".8"/>`;
-    if(h==='buns'){
-      [[96,52],[204,52]].forEach(([x,y])=>{hair+=`<ellipse cx="${x+2}" cy="${y+8}" rx="30" ry="12" fill="#000" opacity=".15" filter="url(#${P}b6)"/><circle cx="${x}" cy="${y}" r="30" fill="url(#${P}ball)"/>
-        <path d="M${x-18} ${y+4}q2-20 20-20q16 2 14 16q-2 12-14 10q-8-2-6-10" stroke="${hcD}" stroke-width="2" fill="none" opacity=".45"/>
-        <path d="M${x-10} ${y-16}q12-6 22 2" stroke="${hcL}" stroke-width="2.4" fill="none" opacity=".55" stroke-linecap="round"/>`;});
-    } else if(h==='puffs'){
-      [[82,78,-1],[218,78,1]].forEach(([x,y,s])=>{hair+=`<g transform="rotate(${s*20} ${x} ${y})"><path d="M${x} ${y}l-16-11v22z" fill="#E8B730"/><path d="M${x} ${y}l16-11v22z" fill="#D9A31E"/><circle cx="${x}" cy="${y}" r="5" fill="#F2C94C"/></g>`});
-    } else if(h==='braids'){
-      [[124,94,104,48],[176,94,196,48]].forEach(([x1,y1,x2,y2])=>{const n=6;for(let i=0;i<n;i++){const t=i/(n-1);const x=x1+(x2-x1)*t,y=y1+(y2-y1)*t;const ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
-        hair+=`<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="7" ry="5.5" transform="rotate(${ang+(i%2?30:-30)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="url(#${P}ball)" stroke="${hcD}" stroke-width="1" stroke-opacity=".4"/>`;}});
-    }
-  }
-
-  let extra='';
-  if(sleep)extra=`<g font-family="Baloo 2, sans-serif" font-weight="800" fill="#fff" opacity=".9"><text x="236" y="70" font-size="26">z</text><text x="256" y="46" font-size="19">z</text><text x="270" y="28" font-size="14">z</text></g>`;
-
-  const tilt=sleep?'rotate(-6 150 250)':'';
-  return `<svg class="av${sleep?' sleep':''}" viewBox="-14 -26 328 346" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Portrait of your baby">
-    ${defs}
-    <g class="breathe">${body}
-      <g transform="${tilt}"><g class="headg">${behind}${ears}${head}${eyes}${brows}${nose}${mouth}${hair}</g></g>
-    </g>${extra}</svg>`;
-}
-
-/* ---------- render ---------- */
-function ageInfo(){
-  if(!profile.birth)return null;
-  const b=new Date(profile.birth+'T00:00:00'); if(isNaN(b))return null;
-  const t=new Date(); t.setHours(0,0,0,0);
-  const days=Math.floor((t-b)/DAY); if(days<0)return null;
-  let txt; if(days<14)txt=days+(days===1?' day old':' days old'); else if(days<91)txt=Math.floor(days/7)+' weeks old'; else {let m=(t.getFullYear()-b.getFullYear())*12+t.getMonth()-b.getMonth(); if(t.getDate()<b.getDate())m--; txt=m+' months old';}
-  return {day:days+1,txt,days};
-}
-function partOfDay(h){return h<5?'Night':h<12?'Morning':h<17?'Afternoon':h<21?'Evening':'Night'}
-let lastFaceKey='';
-function render(){
-  const needs=computeNeeds(), md=mood(needs);
-  $('#babyName').textContent=profile.name||'Baby';
-  const a=ageInfo(); $('#ageLine').textContent=a?a.txt:'No birthday yet';
-  $('#dayCount').textContent='Day '+(a?a.day:'1');
-  const now=new Date(); $('#clockLbl').textContent=partOfDay(now.getHours())+' · '+clock(now);
-  $('#portrait').classList.toggle('night',now.getHours()>=19||now.getHours()<7);
-  $('#samplePill').hidden=!usingSample();
-  document.documentElement.style.setProperty('--mood',colorFor(md.v));
-  $('#moodLabel').textContent=md.label;
-  const fk=JSON.stringify(profile.look)+md.face;
-  if(fk!==lastFaceKey){$('#baby').innerHTML=avatarSVG(profile.look,md.face);lastFaceKey=fk;}
-  $('#moodlets').innerHTML=moodlets(needs).map(m=>`<div class="moodlet ${m[0]}"><div class="mi">${m[1]}</div>${m[2]}</div>`).join('');
-  const defs=[['hunger','Hunger','bottle'],['energy','Energy',needs.energy.sleeping?'moon':'sun'],['hygiene','Hygiene','drop'],['social','Social','heart']];
-  $('#needs').innerHTML=defs.map(([k,l,ic])=>{const n=needs[k],v=n.v;return `<div class="need"><div class="row"><div class="ic">${IC[ic]}</div><div class="nm">${l}</div></div>
-    <div class="bar${v==null?' empty':''}" role="meter" aria-label="${l}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v==null?0:Math.round(v)}"><i style="width:${v==null?100:Math.max(6,v)}%;--c:${v==null?'transparent':colorFor(v)}"></i></div>
-    <div class="sub">${esc(n.sub)}</div></div>`}).join('');
-  renderActions();
-  if(sheet&&sheet.kind==='history'&&!document.querySelector('.del.arm'))drawSheet();
-}
-function renderActions(){
-  const s=sleepingNow();
-  const acts=[['feed','Feed','bottle'],['sleep',s?'Wake up':'Nap',s?'sun':'moon'],['diaper','Diaper','diaper'],['play','Play','rattle'],['bath','Bath','tub']];
-  $('#actions').innerHTML=acts.map(([k,l,ic])=>`<button class="act${k==='sleep'&&s?' on':''}" data-act="${k}">${IC[ic]}<span>${l}</span></button>`).join('');
-}
-function historyHTML(){
-  const n=Date.now(), mid=new Date(); mid.setHours(0,0,0,0); const m0=mid.getTime();
-  const list=all(), today=list.filter(e=>e.t>=m0);
-  const feeds=today.filter(e=>e.type==='feed'), bottle=feeds.reduce((s,e)=>s+(e.amount||0),0);
-  const sleepMs=sleepBetween(m0,n), diapers=today.filter(e=>e.type==='diaper'), dirty=diapers.filter(e=>e.sub!=='wet').length;
-  let h=`<h3>History</h3><p class="hint">${usingSample()?'This is the sample day. Your own entries replace it.':'Today so far, plus the last 48 hours.'}</p>
-   <div class="stats"><div class="stat"><small>Feeds</small><b>${feeds.length}</b>${bottle?`<em>${fmtAmt(bottle)}</em>`:''}</div>
-   <div class="stat"><small>Sleep</small><b>${sleepMs<MIN?'0m':dur(sleepMs)}</b></div>
-   <div class="stat"><small>Diapers</small><b>${diapers.length}</b>${diapers.length?`<em>${dirty} dirty</em>`:''}</div>
-   <div class="stat"><small>Play</small><b>${today.filter(e=>e.type==='play').length}</b><em>sessions</em></div></div><ul class="events">`;
-  const recent=list.filter(e=>e.t>=n-48*HR);
-  if(!recent.length)h+='<li class="empty">Nothing logged in the last 48 hours.</li>';
-  let lastDay=''; const tk=dayKey(n), yk=dayKey(n-DAY);
-  recent.forEach(e=>{
-    const k=dayKey(e.t);
-    if(k!==lastDay){h+=`<li class="daysep">${k===tk?'Today':k===yk?'Yesterday':new Date(e.t).toLocaleDateString([], {weekday:'long',month:'short',day:'numeric'})}</li>`;lastDay=k;}
-    const title=e.type==='sleep'?(e.end?'Nap':'Asleep'):TYPE_LABEL[e.type];
-    const det=e.type==='sleep'&&e.end?`${dur(e.end-e.t)} · woke ${clock(e.end)}`:detail(e);
-    h+=`<li class="ev"><time>${clock(e.t)}</time><div class="eic">${IC[TYPE_ICON[e.type]]}</div><div class="what"><b>${esc(title)}</b><span>${esc(det||ago(e.t))}</span></div>${usingSample()||readOnly?'<span></span>':`<button class="del" data-del="${esc(e.id)}" aria-label="Remove this entry">Remove</button>`}</li>`;
-  });
-  h+=`</ul><p class="foot">${db?(readOnly?'View only. Ask the owner for Contributor access to log.':'Synced for everyone you share this page with as a Contributor.'):'Saving on this device only.'}</p>`;
-  return h;
-}
-
-/* ---------- writes ---------- */
-async function putEvent(ev){
-  events[ev.id]=ev; saveLocal(); render();
-  if(!db)return true;
-  const ref=db.doc('days/'+dayKey(ev.t));
-  try{await ref.update({events:{[ev.id]:ev}});return true}
-  catch(e){
-    if(e&&e.code==='invalid_argument'){
-      try{const snap=await ref.get();
-        if(snap.exists)await ref.update({events:{[ev.id]:ev}});
-        else await ref.set({date:dayKey(ev.t),events:{[ev.id]:ev}});
-        return true;
-      }catch(e2){return writeFailed(e2)}
-    }
-    return writeFailed(e);
-  }
-}
-async function patchEvent(id,patch){
-  const cur=events[id]; if(!cur)return;
-  events[id]=Object.assign({},cur,patch); saveLocal(); render();
-  if(!db)return;
-  try{await db.doc('days/'+dayKey(cur.t)).update({events:{[id]:patch}})}catch(e){writeFailed(e)}
-}
-async function removeEvent(id){
-  const cur=events[id]; if(!cur)return;
-  delete events[id]; saveLocal(); render();
-  if(!db)return;
-  try{await db.doc('days/'+dayKey(cur.t)).update({events:{[id]:null}})}catch(e){writeFailed(e)}
-}
-function writeFailed(e){
-  if(e&&e.code==='invalid_argument'){readOnly=true;showToast('You can view this log but not add to it. Ask the owner to share it with you as a Contributor.');}
-  else if(e&&e.code==='quota_exceeded')showToast('The log is full. Remove some old entries to keep logging.');
-  else showToast('That didn’t save. Check your connection and try again.');
-  render(); return false;
-}
-async function saveProfile(){
-  saveLocal(); render();
-  if(db){try{await db.doc('baby/profile').set(profile)}catch(e){writeFailed(e)}}
-}
-
-/* ---------- sound ---------- */
-let actx=null;
-function blip(up=true){
-  if(!profile.sound)return;
-  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-    const t=actx.currentTime;[0,0.09].forEach((d,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=up?(i?880:660):(i?520:700);g.gain.setValueAtTime(0.0001,t+d);g.gain.exponentialRampToValueAtTime(0.12,t+d+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.16);o.connect(g).connect(actx.destination);o.start(t+d);o.stop(t+d+0.2)});
-  }catch(_){}
-}
-
-/* ---------- toast ---------- */
-let toastTimer=null, undoFn=null;
-function showToast(msg,undo){
-  $('#toastMsg').textContent=msg; undoFn=undo||null; $('#toastUndo').hidden=!undo; $('#toast').hidden=false;
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{$('#toast').hidden=true;undoFn=null},undo?6000:4500);
-}
-$('#toastUndo').addEventListener('click',()=>{const f=undoFn;$('#toast').hidden=true;undoFn=null;if(f)f()});
-
-/* ---------- babble ---------- */
-const BABBLE={hunger:['Nom nom?','Mmm-ba-ba!','Ba-ba-bot?'],energy:['Hwaaa…','Mm… sleepy','Nuh-nuh…'],hygiene:['Eww-bah!','Pbbbt!','Uh-oh!'],social:['Da! Da!','Up-pee?','Goo-goo!'],happy:['Gah-gah!','Hee hee!','Bwah!','Ahh-boo!']};
-let speechT=null;
-function babble(){
-  const needs=computeNeeds(); if(needs.energy.sleeping){say('Zzz…');return}
-  let low=null,lv=101;['hunger','energy','hygiene','social'].forEach(k=>{const v=needs[k].v;if(v!=null&&v<lv){lv=v;low=k}});
-  const pool=lv<40?BABBLE[low]:BABBLE.happy; say(pool[Math.floor(Math.random()*pool.length)]); blip(true);
-}
-function say(t){const s=$('#speech');s.textContent=t;s.classList.remove('off');clearTimeout(speechT);speechT=setTimeout(()=>s.classList.add('off'),2400)}
-$('#baby').addEventListener('click',babble);
-
-/* ---------- sheets ---------- */
-let sheet=null;
-function whenChips(){
-  const opts=[['now','Now'],['10','10 min ago'],['30','30 min ago'],['60','1 hr ago'],['custom','Pick a time']];
-  return `<span class="lbl">When</span><div class="chips">${opts.map(([v,l])=>`<button class="chip" data-when="${v}" aria-pressed="${sheet.when===v}">${l}</button>`).join('')}</div>
-   <div ${sheet.when==='custom'?'':'hidden'} style="margin-top:8px"><input type="datetime-local" id="customTime" value="${esc(sheet.custom||localInput(Date.now()))}"></div>`;
-}
-function localInput(t){const d=new Date(t-new Date(t).getTimezoneOffset()*MIN);return d.toISOString().slice(0,16)}
-function resolveWhen(){
-  if(sheet.when==='now')return Date.now();
-  if(sheet.when==='custom'){const v=$('#customTime')&&$('#customTime').value;const t=v?new Date(v).getTime():NaN;return isNaN(t)?Date.now():Math.min(t,Date.now())}
-  return Date.now()-parseInt(sheet.when,10)*MIN;
-}
-function openSheet(kind){
-  const f=lastOf('feed');
-  const nextSide=f&&f.sub==='left'?'right':f&&f.sub==='right'?'left':null;
-  sheet={kind,when:'now',sub:kind==='feed'?(f&&f.sub==='bottle'?'bottle':(nextSide||'bottle')):null,amount:profile.lastAmount||90,nextSide};
-  drawSheet(); $('#sheetWrap').hidden=false;
-}
-function closeSheet(){$('#sheetWrap').hidden=true;sheet=null;$('#sheet').innerHTML=''}
-function drawSheet(){
-  const k=sheet.kind; let h='';
-  if(k==='feed'){
-    const step=profile.unit==='oz'?14.7868:10;
-    h=`<h3>${IC.bottle}Log a feed</h3><p class="hint">${sheet.nextSide?`Last feed was the ${sheet.nextSide==='left'?'right':'left'} side, so ${sheet.nextSide} is up next.`:'Pick the type, then log it.'}</p>
-     <span class="lbl">Type</span><div class="chips">${Object.entries(SUBS.feed).map(([v,l])=>`<button class="chip big" data-sub="${v}" aria-pressed="${sheet.sub===v}">${l}</button>`).join('')}</div>
-     ${sheet.sub==='bottle'?`<span class="lbl">Amount</span><div class="stepper"><button data-amt="-${step}" aria-label="Less">−</button><output id="amtOut">${fmtAmt(sheet.amount)}</output><button data-amt="${step}" aria-label="More">+</button></div>`:''}
-     ${whenChips()}<button class="primary" id="doLog">Log feed</button>`;
-  } else if(k==='sleep'){
-    h=`<h3>${IC.moon}Start a nap</h3><p class="hint">Tap Wake up on the bar when they're up. Energy refills while they sleep.</p>${whenChips()}<button class="primary" id="doLog">Start sleeping</button>`;
-  } else if(k==='diaper'){
-    h=`<h3>${IC.diaper}Diaper change</h3><p class="hint">Tap one to log it.</p>${whenChips()}<span class="lbl">What was it</span><div class="chips">${Object.entries(SUBS.diaper).map(([v,l])=>`<button class="chip big" data-quick="${v}">${l}</button>`).join('')}</div>`;
-  } else if(k==='play'){
-    h=`<h3>${IC.rattle}Play and connect</h3><p class="hint">Tap one to log it. Social only drains while they're awake.</p>${whenChips()}<span class="lbl">What did you do</span><div class="chips">${Object.entries(SUBS.play).map(([v,l])=>`<button class="chip big" data-quick="${v}">${l}</button>`).join('')}</div>`;
-  } else if(k==='bath'){
-    h=`<h3>${IC.tub}Bath time</h3><p class="hint">Adds the Squeaky Clean moodlet.</p>${whenChips()}<button class="primary" id="doLog">Log bath</button>`;
-  } else if(k==='settings'){ h=settingsHTML(); }
-  else if(k==='history'){ h=historyHTML(); }
-  h+=`<button class="ghost" id="closeSheet">Close</button>`;
-  const sc=$('#sheet').scrollTop;
-  $('#sheet').innerHTML=h; $('#sheet').scrollTop=sc;
-}
-function logFrom(kind,sub){
-  const t=resolveWhen();
-  const ev={id:uid(),type:kind,t};
-  if(sub)ev.sub=sub;
-  if(kind==='feed'&&sub==='bottle'){ev.amount=Math.round(sheet.amount);profile.lastAmount=ev.amount;saveProfile();}
-  if(kind==='sleep')ev.end=null;
-  const wasSample=usingSample();
-  closeSheet(); putEvent(ev); blip(true);
-  const lbl=kind==='sleep'?'Nap started':`${sub&&SUBS[kind]?SUBS[kind][sub]:TYPE_LABEL[kind]} logged`;
-  showToast(lbl+(t<Date.now()-2*MIN?` for ${clock(t)}`:'')+(wasSample?'. Sample cleared.':''),()=>removeEvent(ev.id));
-}
-function wakeUp(){
-  const s=sleepingNow(); if(!s)return;
-  if(usingSample()){showToast('That nap is part of the sample. Start a real nap to try it.');return}
-  const end=Date.now(); patchEvent(s.id,{end}); blip(false);
-  showToast(`Awake after ${dur(end-s.t)}`,()=>patchEvent(s.id,{end:null}));
-}
-
-/* ---------- settings ---------- */
-function ageDefaults(days){
-  if(days==null)return null;
-  if(days<30)return {feedH:2.5,wakeH:1};
-  if(days<91)return {feedH:3,wakeH:1.25};
-  if(days<182)return {feedH:3.5,wakeH:2};
-  if(days<274)return {feedH:4,wakeH:2.75};
-  return {feedH:4,wakeH:3.5};
-}
-function settingsHTML(){
-  const L=sheet.draft.look, a=ageDefaults(ageFromDraft());
-  const sw=(arr,key,lbl)=>arr.map((c,i)=>`<button class="sw" style="background:${c}" data-look="${key}" data-val="${i}" aria-pressed="${L[key]===i}" aria-label="${lbl} ${i+1}"></button>`).join('');
-  return `<h3>Your baby</h3><p class="hint">Changes save for everyone who shares this page.</p>
-   <div class="pv" id="pv">${avatarSVG(L,sheet.face||'happy')}</div>
-   <div class="chips" style="justify-content:center;margin-bottom:4px">${[['happy','Happy'],['calm','Content'],['fuss','Fussy'],['sleep','Asleep']].map(([f,l])=>`<button class="chip" data-face="${f}" aria-pressed="${(sheet.face||'happy')===f}" style="min-height:36px;padding:5px 10px">${l}</button>`).join('')}</div>
-   <span class="lbl">Skin</span><div class="swatches">${sw(SKIN,'skin','Skin tone')}</div>
-   <span class="lbl">Hair</span><div class="chips">${Object.entries(HAIRS).map(([v,l])=>`<button class="chip" data-hair="${v}" aria-pressed="${L.hair===v}">${l}</button>`).join('')}</div>
-   <span class="lbl">Hair color</span><div class="swatches">${sw(HAIRC,'hairColor','Hair color')}</div>
-   <span class="lbl">Eyes</span><div class="swatches">${sw(EYES,'eyes','Eye color')}</div>
-   <span class="lbl">Outfit</span><div class="chips">${Object.entries(OUTFITS).map(([v,l])=>`<button class="chip" data-style="${v}" aria-pressed="${L.style===v}">${l}</button>`).join('')}</div>
-   <span class="lbl">Outfit color</span><div class="swatches">${sw(OUTFIT,'outfit','Outfit color')}</div>
-   <label class="toggle"><input type="checkbox" id="paci" ${L.paci?'checked':''}> Pacifier</label>
-   <div class="grid2" style="margin-top:6px">
-    <div class="field"><span class="lbl">Name</span><input type="text" id="setName" value="${esc(sheet.draft.name)}" maxlength="24"></div>
-    <div class="field"><span class="lbl">Birthday</span><input type="date" id="setBirth" value="${esc(sheet.draft.birth)}"></div>
-   </div>
-   <span class="lbl">How fast the bars drain (hours until due)</span>
-   <div class="grid2">
-    <div class="field"><small>Hunger · between feeds</small><input type="number" step="0.25" min="0.5" max="8" id="setFeed" value="${sheet.draft.feedH}"></div>
-    <div class="field"><small>Energy · awake window</small><input type="number" step="0.25" min="0.5" max="8" id="setWake" value="${sheet.draft.wakeH}"></div>
-    <div class="field"><small>Hygiene · between changes</small><input type="number" step="0.25" min="0.5" max="8" id="setDiaper" value="${sheet.draft.diaperH}"></div>
-    <div class="field"><small>Social · awake time between play</small><input type="number" step="0.25" min="0.5" max="8" id="setPlay" value="${sheet.draft.playH}"></div>
-   </div>
-   ${a?`<button class="chip" id="useAge" style="margin-top:10px">Use typical times for this age (${a.feedH}h feeds, ${a.wakeH}h awake)</button>`:''}
-   <span class="lbl">Bottle units</span><div class="chips"><button class="chip" data-unit="ml" aria-pressed="${sheet.draft.unit==='ml'}">ml</button><button class="chip" data-unit="oz" aria-pressed="${sheet.draft.unit==='oz'}">oz</button></div>
-   <label class="toggle" style="margin-top:8px"><input type="checkbox" id="setSound" ${sheet.draft.sound?'checked':''}> Play a little chime when you log</label>
-   <p class="disclaim">The bars are a friendly guide built from your log. Typical times are rough starting points. Your baby's cues and your pediatrician's advice come first.</p>
-   <button class="primary" id="saveSettings">Save</button>`;
-}
-function ageFromDraft(){const b=sheet&&sheet.draft&&sheet.draft.birth;if(!b)return null;const d=Math.floor((Date.now()-new Date(b+'T00:00:00'))/DAY);return d>=0?d:null}
-function readDraftInputs(){
-  const d=sheet.draft, g=id=>$('#'+id);
-  if(g('setName'))d.name=g('setName').value.trim()||'Baby';
-  if(g('setBirth'))d.birth=g('setBirth').value;
-  const num=(id,fb)=>{const v=parseFloat(g(id)&&g(id).value);return isNaN(v)?fb:clamp(v,0.5,8)};
-  d.feedH=num('setFeed',d.feedH);d.wakeH=num('setWake',d.wakeH);d.diaperH=num('setDiaper',d.diaperH);d.playH=num('setPlay',d.playH);
-  if(g('setSound'))d.sound=g('setSound').checked;
-  if(g('paci'))d.look.paci=g('paci').checked;
-}
-function openSettings(){sheet={kind:'settings',draft:clone(profile),face:'happy'};drawSheet();$('#sheetWrap').hidden=false}
-
-/* ---------- events ---------- */
-$('#actions').addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(!b)return;
-  const k=b.dataset.act;
-  if(k==='sleep'&&sleepingNow()){wakeUp();return}
-  openSheet(k);
-});
-$('#settingsBtn').addEventListener('click',openSettings);
-$('#historyBtn').addEventListener('click',()=>{sheet={kind:'history'};drawSheet();$('#sheetWrap').hidden=false});
-$('#sheetWrap').addEventListener('click',e=>{if(e.target.id==='sheetWrap')closeSheet()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet)closeSheet()});
-$('#sheet').addEventListener('change',e=>{
-  if(!sheet)return;
-  if(sheet.kind==='settings'&&(e.target.id==='setBirth'||e.target.id==='paci')){readDraftInputs();drawSheet()}
-  if(e.target.id==='customTime')sheet.custom=e.target.value;
-});
-$('#sheet').addEventListener('click',e=>{
-  const t=e.target.closest('button'); if(!t||!sheet)return;
-  if(t.id==='closeSheet'){closeSheet();return}
-  if(t.dataset.del){
-    if(t.classList.contains('arm')){const id=t.dataset.del;const ev=events[id];removeEvent(id);drawSheet();if(ev)showToast('Entry removed',()=>{putEvent(ev)});return}
-    t.classList.add('arm');t.textContent='Remove?';setTimeout(()=>{if(t.isConnected){t.classList.remove('arm');t.textContent='Remove'}},3000);return;
-  }
-  if(t.dataset.when){sheet.when=t.dataset.when;const c=$('#customTime');if(c)sheet.custom=c.value;drawSheet();return}
-  if(t.dataset.sub){sheet.sub=t.dataset.sub;drawSheet();return}
-  if(t.dataset.amt){const step=parseFloat(t.dataset.amt);sheet.amount=clamp(sheet.amount+step,0,400);$('#amtOut').textContent=fmtAmt(sheet.amount);return}
-  if(t.dataset.quick){logFrom(sheet.kind,t.dataset.quick);return}
-  if(t.id==='doLog'){logFrom(sheet.kind,sheet.kind==='feed'?sheet.sub:null);return}
-  if(sheet.kind==='settings'){
-    readDraftInputs();
-    if(t.dataset.look){sheet.draft.look[t.dataset.look]=parseInt(t.dataset.val,10);drawSheet();return}
-    if(t.dataset.hair){sheet.draft.look.hair=t.dataset.hair;drawSheet();return}
-    if(t.dataset.style){sheet.draft.look.style=t.dataset.style;drawSheet();return}
-    if(t.dataset.face){sheet.face=t.dataset.face;drawSheet();return}
-    if(t.dataset.unit){sheet.draft.unit=t.dataset.unit;drawSheet();return}
-    if(t.id==='useAge'){const a=ageDefaults(ageFromDraft());if(a){sheet.draft.feedH=a.feedH;sheet.draft.wakeH=a.wakeH;drawSheet()}return}
-    if(t.id==='saveSettings'){profile=mergeProfile(sheet.draft);closeSheet();saveProfile();showToast('Saved');return}
-  }
-});
-
-/* ---------- boot ---------- */
-render();
-setInterval(render,30000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
-
-if(!(window.claude&&window.claude.use)){loadLocal();render();}
-else window.claude.use('db').then(d=>{
-  if(!d){loadLocal();render();return}
-  db=d;
-  db.collection('days').orderBy('date','desc').limit(10).onSnapshot(snap=>{
-    const next={};
-    snap.docs.forEach(doc=>{const ev=(doc.data()||{}).events||{};for(const id in ev){if(ev[id]&&ev[id].t)next[id]=ev[id]}});
-    events=next; render();
-  },()=>showToast('Live updates paused. Reload the page to reconnect.'));
-  db.doc('baby/profile').onSnapshot(s=>{if(s.exists){profile=mergeProfile(s.data());render()}},()=>{});
-  render();
-}).catch(()=>{loadLocal();render()});
-})();
-</script>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

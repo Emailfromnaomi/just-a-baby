@@ -4,11 +4,7 @@ Goal: get **Just a Baby** into the hands of a small group of real parents, learn
 
 ## Where it stands today
 
-- The app works as one static page.
-- Standalone, it saves to `localStorage`, so the data stays on one device in one browser. A partner can't see it, and clearing site data or switching phones loses it.
-- Syncing between caregivers only works in the Claude-hosted version.
-
-The beta needs three things the app doesn't have yet: **accounts, a synced database, and a way to install it**.
+Accounts are built (see [SETUP.md](SETUP.md)): email sign-in, one or more babies per person, invite links for caregivers, live sync, an offline queue, add-to-home-screen, CSV and JSON export, and account deletion. What's left before testers is mostly setup and trust: the Supabase project, sending email, the privacy notice and a name check.
 
 ## Phase 0: Set up the project (this week)
 
@@ -20,17 +16,13 @@ The beta needs three things the app doesn't have yet: **accounts, a synced datab
 
 ## Phase 1: Make it beta-ready (engineering)
 
-1. **Split the file.** Move `index.html` into `index.html` + `app.css` + `app.js`, or a small Vite project. That makes reviews and diffs manageable.
-2. **Backend.** Pick a hosted Postgres/auth service, such as Supabase or Firebase.
-   - Tables: `households`, `members` (user ↔ household, with role), `babies`, `events` (same shape as today, plus `baby_id` and `created_by`).
-   - Row-level security, so people only ever read their own household.
-   - Realtime subscription on `events`, so both caregivers see logs live. This replaces `db.collection('days').onSnapshot`.
-   - The existing `putEvent` / `patchEvent` / `removeEvent` / `saveProfile` functions are the only places that need to change.
-3. **Accounts and sharing.** Use email magic-link sign-in, which means no passwords at 3am. Add an "Invite a caregiver" link that joins someone to the household.
-4. **Installable app (PWA).** Add a web manifest, icons and a service worker, so testers can add it to their home screen and log with no signal. Queue writes while offline.
-5. **Import from localStorage.** On first sign-in, offer to upload anything already logged on that device.
-6. **Export and delete.** Add a CSV/JSON export and a "delete my data" button. You'll want both before strangers use it.
-7. **Multiple babies.** Twins and siblings will come up. The data model should allow it now, even if the UI waits.
+1. ~~**Split the file.**~~ Done: `index.html` + `app.css` + `app.js` + `config.js`.
+2. ~~**Backend.**~~ Done with Supabase: `supabase/schema.sql`, with access-rule tests in `supabase/tests/`.
+3. ~~**Accounts and sharing.**~~ Done: email sign-in link or 6-digit code, and single-use invite links for caregivers.
+4. **Installable app (PWA).** Partly done: there's a manifest, icons and an offline write queue. Still to do: a service worker, so the app itself opens with no signal.
+5. ~~**Import from localStorage.**~~ Done: offered when adding the first baby.
+6. ~~**Export and delete.**~~ Done: CSV and JSON download, and account deletion in settings.
+7. ~~**Multiple babies.**~~ Done: tap the baby's name to switch or add one.
 
 ## Phase 2: Trust and safety (before the first stranger signs up)
 

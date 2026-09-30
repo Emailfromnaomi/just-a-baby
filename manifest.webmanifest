@@ -1,0 +1,15 @@
+{
+  "name": "Just a Baby",
+  "short_name": "Just a Baby",
+  "description": "A baby tracker that reads like a life-sim game: needs bars, moodlets and one-tap logging.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#E6EEF2",
+  "theme_color": "#22476E",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
