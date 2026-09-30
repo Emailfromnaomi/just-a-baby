@@ -72,7 +72,7 @@ returns boolean language sql stable security definer set search_path = public as
 $$;
 
 create or replace function public.touch_updated_at()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql set search_path = '' as $$
 begin new.updated_at = now(); return new; end $$;
 
 drop trigger if exists babies_touch on public.babies;
@@ -170,6 +170,10 @@ begin
   delete from auth.users where id = auth.uid();
 end $$;
 
+revoke all on function public.is_member(uuid) from public, anon;
+revoke all on function public.is_owner(uuid) from public, anon;
+grant execute on function public.is_member(uuid) to authenticated;
+grant execute on function public.is_owner(uuid) to authenticated;
 revoke all on function public.create_baby(text, date, jsonb, jsonb) from public, anon;
 revoke all on function public.accept_invite(text) from public, anon;
 revoke all on function public.delete_my_account() from public, anon;

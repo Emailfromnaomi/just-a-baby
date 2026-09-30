@@ -90,7 +90,10 @@ set role anon;
 \echo -- expected error: anon cannot create
 select public.create_baby('x',null,null,null);
 \set ON_ERROR_STOP on
-select t('anon sees nothing', (select count(*) from babies)=0);
+do $$ declare n int; begin
+  begin select count(*) into n from public.babies; raise notice 'anon saw % babies', n; if n<>0 then raise exception 'FAIL anon sees babies'; end if;
+  exception when insufficient_privilege then null; end; end $$;
+select t('anon sees nothing (blocked)', true);
 reset role;
 
 -- B leaves; A deletes account

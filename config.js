@@ -7,6 +7,6 @@
 // Leave both empty to run in local mode: no accounts, a sample day, and entries
 // saved only in this browser.
 window.JAB_CONFIG = {
-  supabaseUrl: "",
-  supabaseAnonKey: ""
+  supabaseUrl: "https://svxozivzsgckrmglukca.supabase.co",
+  supabaseAnonKey: "sb_publishable_sqdUNs8BKA3cw_HIp1QAPg_a9JOURwa"
 };
