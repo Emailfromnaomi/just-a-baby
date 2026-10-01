@@ -50,6 +50,7 @@ To turn on accounts, follow **[SETUP.md](SETUP.md)**. It takes about 20 minutes.
 | `config.js` | Supabase URL and anon key (empty = local mode) |
 | `supabase/schema.sql` | Tables, row-level security and RPCs. Paste into Supabase once. |
 | `supabase/tests/` | Plain-Postgres tests of the access rules |
+| `supabase/customerio.sql`, `supabase/functions/cio-sync/` | Sends people and events to Customer.io. See [CUSTOMERIO.md](CUSTOMERIO.md) |
 | `privacy.html` | Draft privacy notice (fill in before the beta) |
 | `manifest.webmanifest`, `icons/` | Add-to-home-screen support |
 
