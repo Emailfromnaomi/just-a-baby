@@ -31,7 +31,7 @@ Use these as `{{ customer.<name> }}` in Liquid. Timestamps are Unix seconds, so 
 | `baby_id` | string | `f5a9…` | First baby they joined |
 | `baby_name` | string | `Mia` | |
 | `baby_birth_date` | string | `2026-08-10` | Not set if no birthday |
-| `baby_birth_at` | timestamp | `1786320000` | Same date, for age maths and segments |
+| `baby_birth_at` | timestamp | `1784116800` | Same date at noon UTC, for age maths and segments. For display, use `baby_birth_date` |
 | `babies_count` | number | `1` | |
 | `caregivers_count` | number | `2` | People on their first baby, including them |
 | `bottle_unit` | string | `ml` / `oz` | |

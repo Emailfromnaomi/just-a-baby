@@ -93,7 +93,7 @@ returns jsonb language sql stable security definer set search_path = public as $
     'baby_id',            (select baby_id from m),
     'baby_name',          (select name from m),
     'baby_birth_date',    (select birth::text from m),
-    'baby_birth_at',      extract(epoch from (select birth from m)::timestamptz)::bigint,
+    'baby_birth_at',      extract(epoch from ((select birth from m) + time '12:00') at time zone 'UTC')::bigint,  -- noon UTC: same calendar day in any time zone
     'caregivers_count',   (select count(*) from public.baby_members where baby_id = (select baby_id from m)),
     'bottle_unit',        (select settings->>'unit' from m),
     'total_logs',         (select n from ev),
