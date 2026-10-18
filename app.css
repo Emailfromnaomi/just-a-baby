@@ -184,3 +184,43 @@ input[type=text],input[type=email],input[type=date],input[type=number],input[typ
 
 .panel a,.disclaim a{color:var(--panel2);font-weight:700}
 @media (max-width:430px){.daychip small{display:none}.daychip{padding:7px 10px 5px}.who h1{font-size:23px}}
+
+/* ---------- milestones ---------- */
+.iconbtn{position:relative}
+.iconcount{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;border-radius:10px;padding:0 5px;background:var(--gold);color:var(--gold-ink);font:800 11.5px/20px var(--display);text-align:center;box-shadow:0 0 0 2px var(--bg)}
+@media (max-width:400px){.top{gap:7px}.iconbtn{width:40px;height:40px}}
+select{font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:48px}
+.msbar{height:10px;border-radius:999px;background:var(--bg);overflow:hidden;margin:4px 0 14px}
+.msbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#4FB98F,#4F9FDC,#9C7FD6,#EE8E5A)}
+.mslog{background:var(--bg);border-radius:16px;padding:12px}
+.mslog .lbl{margin-top:0}
+.mslog select{background:var(--card)}
+.msrow{display:flex;gap:8px;margin-top:8px}
+.msrow input{flex:1;min-width:0}
+.msrow .primary{margin-top:0;width:auto;flex:none;padding:0 18px;min-height:48px;font-size:17px}
+.msband{font-family:var(--display);font-weight:800;font-size:16px;margin:18px 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+.msband span{color:var(--muted);font:700 13px var(--body)}
+.msgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+@media (min-width:520px){.msgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.badge{border:0;background:none;border-radius:14px;padding:8px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0}
+.badge:hover{background:var(--bg)}
+.badge b{font-family:var(--display);font-weight:700;font-size:13.5px;line-height:1.1;color:var(--ink);overflow-wrap:anywhere}
+.badge span{font-size:11.5px;line-height:1.2;color:var(--muted)}
+.badge:not(.got) b{color:var(--muted)}
+.badge.got .badgeart{filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))}
+.badge:not(.got) .badgeart{opacity:.8}
+.back{width:auto;margin:0 0 2px;padding:0;text-align:left;min-height:36px;font-weight:700}
+.msdetail{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.msdetail h3{justify-content:center;margin-top:4px}
+.msblurb{font-size:16px;line-height:1.5;max-width:34ch;margin:2px auto 4px}
+.unlock{position:fixed;inset:0;z-index:70;background:rgba(10,20,35,.62);display:grid;place-items:center;padding:16px}
+.unlockcard{position:relative;overflow:hidden;width:100%;max-width:380px;border-radius:26px;padding:26px 22px 22px;text-align:center;color:var(--panel-ink);background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid color-mix(in srgb,var(--edge) 50%,transparent);box-shadow:0 24px 60px rgba(0,0,0,.4);animation:up .25s ease-out}
+.unlockcard > :not(.rays){position:relative}
+.rays{position:absolute;left:50%;top:92px;width:460px;height:460px;margin:-230px 0 0 -230px;border-radius:50%;background:repeating-conic-gradient(rgba(255,255,255,.11) 0 9deg,transparent 9deg 18deg);-webkit-mask:radial-gradient(circle,#000 25%,transparent 68%);mask:radial-gradient(circle,#000 25%,transparent 68%);animation:spin 16s linear infinite;pointer-events:none}
+.ubadge{display:inline-block;animation:pop .7s cubic-bezier(.2,1.6,.4,1) both}
+.unlockcard small{display:block;margin-top:4px;font:800 13px var(--display);letter-spacing:1.6px;text-transform:uppercase;color:var(--gold)}
+.unlockcard h3{font:800 28px/1.05 var(--display);margin:2px 0 8px;text-wrap:balance}
+.unlockcard p{margin:0 auto 8px;max-width:32ch;line-height:1.45}
+.unlockcard .udate{color:var(--panel-muted);font-size:14px;margin-bottom:4px}
+@keyframes pop{0%{transform:scale(.2) rotate(-14deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}

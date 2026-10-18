@@ -100,6 +100,10 @@ returns jsonb language sql stable security definer set search_path = public as $
     'logs_last_7_days',   (select count(*) from public.events where created_by = p_user and created_at > now() - interval '7 days'),
     'first_logged_at',    extract(epoch from (select first_at from ev))::bigint,
     'last_logged_at',     extract(epoch from (select last_at from ev))::bigint,
+    'milestones_count',   (select count(*) from public.milestones where baby_id = (select baby_id from m)),
+    'latest_milestone_key',  (select key from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
+    'latest_milestone_name', (select name from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
+    'latest_milestone_at',   (select extract(epoch from (achieved_on + time '12:00') at time zone 'UTC')::bigint from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
     'app',                'just-a-baby'
   )) end;
 $$;
@@ -270,3 +274,22 @@ revoke all on function public.cio_on_member() from public, anon, authenticated;
 revoke all on function public.cio_on_baby() from public, anon, authenticated;
 revoke all on function public.cio_on_invite() from public, anon, authenticated;
 revoke all on function public.cio_on_event() from public, anon, authenticated;
+
+-- Milestones: tell everyone who cares for the baby
+create or replace function public.cio_on_milestone()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare b public.babies; r record;
+begin
+  select * into b from public.babies where id = new.baby_id;
+  for r in select user_id from public.baby_members where baby_id = new.baby_id loop
+    perform public.cio_enqueue('event', r.user_id, 'milestone_unlocked', jsonb_build_object(
+      'milestone_key', new.key, 'milestone_name', new.name, 'achieved_on', new.achieved_on::text,
+      'achieved_at', extract(epoch from (new.achieved_on + time '12:00') at time zone 'UTC')::bigint,
+      'logged_by_me', r.user_id = new.created_by, 'baby_id', b.id, 'baby_name', b.name));
+  end loop;
+  return new;
+end $$;
+drop trigger if exists cio_milestones on public.milestones;
+create trigger cio_milestones after insert on public.milestones
+  for each row execute function public.cio_on_milestone();
+revoke all on function public.cio_on_milestone() from public, anon, authenticated;

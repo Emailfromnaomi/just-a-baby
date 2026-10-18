@@ -14,7 +14,7 @@ const $=s=>document.querySelector(s);
 const MIN=60000, HR=3600000, DAY=86400000;
 const CFG=window.JAB_CONFIG||{};
 const CLOUD=!!(CFG.supabaseUrl&&CFG.supabaseAnonKey&&window.supabase&&window.supabase.createClient);
-const LS={events:'ln-events',profile:'ln-profile',baby:'jab-baby',invite:'jab-invite',outbox:'jab-outbox',imported:'jab-imported'};
+const LS={events:'ln-events',profile:'ln-profile',baby:'jab-baby',invite:'jab-invite',outbox:'jab-outbox',imported:'jab-imported',milestones:'ln-milestones'};
 function lsGet(k,fb){try{const v=localStorage.getItem(k);return v==null?fb:JSON.parse(v)}catch(_){return fb}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}
 function lsDel(k){try{localStorage.removeItem(k)}catch(_){}}
@@ -28,6 +28,7 @@ const IC={
  diaper:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7h18v3c0 5-4 9-9 9s-9-4-9-9z"/><path d="M8 10c0 2.5 1.8 4.5 4 4.5s4-2 4-4.5"/></svg>',
  heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.3-8.6-8.7C2.2 8 4.2 5 7.2 5c1.9 0 3.2 1 4.8 2.8C13.6 6 14.9 5 16.8 5c3 0 5 3 3.8 6.3C19 15.7 12 20 12 20z"/></svg>',
  rattle:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l7 7M18 16l-2 2"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>',
+ trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4"/><path d="M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4"/><path d="M9 20h6"/><path d="M10 17h4"/></svg>',
  tub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2"/><circle cx="13" cy="8" r="1"/><circle cx="16" cy="6" r="1.3"/></svg>'
 };
 const TYPE_ICON={feed:'bottle',sleep:'moon',diaper:'diaper',play:'rattle',bath:'tub'};
@@ -372,6 +373,7 @@ function render(){
   $('#needs').innerHTML=defs.map(([k,l,ic])=>{const n=needs[k],v=n.v;return `<div class="need"><div class="row"><div class="ic">${IC[ic]}</div><div class="nm">${l}</div></div>
     <div class="bar${v==null?' empty':''}" role="meter" aria-label="${l}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v==null?0:Math.round(v)}"><i style="width:${v==null?100:Math.max(6,v)}%;--c:${v==null?'transparent':colorFor(v)}"></i></div>
     <div class="sub">${esc(n.sub)}</div></div>`}).join('');
+  const nMs=Object.keys(milestones).length; $('#msCount').textContent=nMs; $('#msCount').hidden=!nMs;
   renderActions();
   if(sheet&&sheet.kind==='history'&&!document.querySelector('.del.arm'))drawSheet();
 }
@@ -425,6 +427,8 @@ async function runOp(op){
   else if(op.kind==='update')r=await sb.from('events').update(op.row).eq('id',op.id);
   else if(op.kind==='delete')r=await sb.from('events').delete().eq('id',op.id);
   else if(op.kind==='baby')r=await sb.from('babies').update(op.row).eq('id',op.id);
+  else if(op.kind==='ms_upsert')r=await sb.from('milestones').upsert(op.row,{onConflict:'baby_id,key'});
+  else if(op.kind==='ms_delete')r=await sb.from('milestones').delete().eq('baby_id',op.baby_id).eq('key',op.key);
   if(r&&r.error)throw r.error;
 }
 async function send(op,rollback){
@@ -447,7 +451,7 @@ async function flushOutbox(){
       outbox.shift();saveOutbox();
     }
   }finally{flushing=false}
-  if(!outbox.length&&baby)loadEvents();
+  if(!outbox.length&&baby){loadEvents();loadMilestones()}
 }
 function friendly(err){
   const m=(err&&(err.message||err.error_description))||'';
@@ -456,6 +460,7 @@ function friendly(err){
   if(/invite already used/i.test(m))return 'That invite link has already been used. Ask for a new one.';
   if(/invite expired/i.test(m))return 'That invite link has expired. Ask for a new one.';
   if(/invite not found/i.test(m))return 'That invite link isn’t valid. Check you copied all of it.';
+  if(/milestones_baby_id_key|duplicate key/i.test(m))return 'That badge is already in the collection.';
   if(/rate limit|too many/i.test(m))return 'Too many tries. Wait a minute, then try again.';
   return 'That didn’t save. Check your connection and try again.';
 }
@@ -479,8 +484,8 @@ function saveProfile(){
   if(CLOUD&&baby){const row=rowFromProfile(profile);Object.assign(baby,row);const i=babies.findIndex(b=>b.id===baby.id);if(i>=0)babies[i]=baby;return send({kind:'baby',id:baby.id,row});}
   saveLocal();
 }
-function saveLocal(){if(CLOUD)return;lsSet(LS.events,events);lsSet(LS.profile,profile)}
-function loadLocal(){const e=lsGet(LS.events,null);if(e)events=e;const p=lsGet(LS.profile,null);if(p)profile=mergeProfile(p)}
+function saveLocal(){if(CLOUD)return;lsSet(LS.events,events);lsSet(LS.profile,profile);lsSet(LS.milestones,milestones)}
+function loadLocal(){const e=lsGet(LS.events,null);if(e)events=e;const p=lsGet(LS.profile,null);if(p)profile=mergeProfile(p);const ms=lsGet(LS.milestones,null);if(ms)milestones=ms}
 
 async function loadEvents(){
   if(!baby)return;
@@ -505,6 +510,14 @@ function subscribe(){
       if(p.eventType==='DELETE'){if(p.old&&p.old.id&&events[p.old.id]){delete events[p.old.id];render()}return}
       if(p.new&&p.new.baby_id===id){events[p.new.id]=rowToEvent(p.new);render()}
     })
+    .on('postgres_changes',{event:'*',schema:'public',table:'milestones',filter:'baby_id=eq.'+id},p=>{
+      if(!baby||baby.id!==id)return;
+      if(p.eventType==='DELETE'){const k=Object.keys(milestones).find(k=>milestones[k].id===(p.old&&p.old.id));if(k){delete milestones[k];msRefresh()}return}
+      const r=p.new; if(!r||r.baby_id!==id)return;
+      const isNew=!milestones[r.key];
+      milestones[r.key]={id:r.id,key:r.key,name:r.name,on:r.achieved_on}; msRefresh();
+      if(isNew&&$('#unlock').hidden)showToast('New badge unlocked: '+r.name);
+    })
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'babies',filter:'id=eq.'+id},p=>{
       if(!p.new||!baby||baby.id!==id)return;
       baby=p.new;const i=babies.findIndex(b=>b.id===id);if(i>=0)babies[i]=p.new;
@@ -512,6 +525,152 @@ function subscribe(){
     })
     .subscribe();
 }
+
+/* ---------- milestones ----------
+ * Collectable badges. The catalog lives in milestones.js; collected badges are
+ * stored per baby as {id, key, name, on: 'YYYY-MM-DD'}, keyed by milestone key.
+ */
+const MS=(window.JAB_MILESTONES||[]).slice().sort((a,b)=>a.w[0]-b.w[0]||a.w[1]-b.w[1]);
+const MS_BY=Object.fromEntries(MS.map(m=>[m.key,m]));
+const BANDS=[['Newborn to 3 months',0,13],['3 to 6 months',13,26],['6 to 9 months',26,39],['9 to 12 months',39,999]];
+const BAND_COL=['#4FB98F','#4F9FDC','#9C7FD6','#EE8E5A'];
+const HEX='M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z', HEX_IN='M50 14 L81 32 L81 68 L50 86 L19 68 L19 32 Z';
+const BADGE_IC={
+ house:'<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',
+ drop:'<path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/>',
+ stroller:'<path d="M4 5a7 7 0 0 0 7 7h8"/><path d="M11 5v7"/><path d="M19 12a7 7 0 0 1-7 5H8"/><circle cx="8" cy="20" r="1.6"/><circle cx="17" cy="20" r="1.6"/>',
+ up:'<path d="M12 20V5"/><path d="M6 11l6-6 6 6"/>',
+ smile:'<circle cx="12" cy="12" r="9"/><path d="M8 14.5q4 3.5 8 0"/><path d="M9 9.5h.01M15 9.5h.01"/>',
+ eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+ bubble:'<path d="M4 5h16v11H10l-5 4v-4H4z"/><path d="M8 10.5h.01M12 10.5h.01M16 10.5h.01"/>',
+ hand:'<path d="M7 13V7a1.5 1.5 0 0 1 3 0v4"/><path d="M10 11V5a1.5 1.5 0 0 1 3 0v6"/><path d="M13 11V6a1.5 1.5 0 0 1 3 0v6"/><path d="M16 12V9a1.5 1.5 0 0 1 3 0v5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7l-2.6-4a1.5 1.5 0 0 1 2.5-1.6L7 14"/>',
+ moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+ sparkle:'<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/>',
+ star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+ roll:'<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v4h-4"/>',
+ tag:'<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="7.5" r="1.4"/>',
+ spoon:'<path d="M8 3c2 0 3.5 2 3.5 4.5S10 12 8 12 4.5 10 4.5 7.5 6 3 8 3z"/><path d="M8 12v9"/><path d="M16 3v18"/><path d="M14 3v5a2 2 0 0 0 4 0V3"/>',
+ peek:'<path d="M3 11q9 8 18 0"/><path d="M7 14.5L6 17M12 16v2.5M17 14.5l1 2.5"/>',
+ tooth:'<path d="M7 3C5 3 4 5 4 7c0 3 1 5 1.5 8S7 21 8.5 21s1.5-5 3.5-5 2 5 3.5 5 2-3 2.5-6S20 10 20 7c0-2-1-4-3-4s-3 1-5 1-3-1-5-1z"/>',
+ cup:'<path d="M6 7h12l-1.5 13h-9z"/><path d="M6.5 11h11"/><path d="M14 7l2-4"/>',
+ feet:'<path d="M8 3.5c1.7 0 3 2 3 5s-1.2 5-3 5-3-2-3-5 1.3-5 3-5z"/><path d="M16 9.5c1.7 0 3 2 3 5s-1.2 5-3 5-3-2-3-5 1.3-5 3-5z"/>',
+ cake:'<path d="M4 21h16"/><path d="M5 21v-7h14v7"/><path d="M5 16.5c2 1.5 4.5 1.5 7 0s5-1.5 7 0"/><path d="M12 14V9.5"/><path d="M12 7c.9-.9 0-2.5 0-2.5S11.1 6.1 12 7z"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+};
+let milestones={}, reopenMs=false;
+function bandOf(m){const i=BANDS.findIndex(b=>m.w[0]>=b[1]&&m.w[0]<b[2]);return i<0?3:i}
+function msColor(m){return m.key==='first_birthday'?'#E9AE3A':BAND_COL[bandOf(m)]}
+function winText(m,long){
+  const [a,b]=m.w, mo=w=>Math.max(1,Math.round(w/4.345));
+  if(m.key==='first_birthday')return long?'at 1 year':'1 year';
+  if(b<=1)return long?'in the first few days':'First days';
+  if(a===0)return long?`in the first ${b} weeks`:`First ${b} wks`;
+  if(b<13)return long?`at ${a} to ${b} weeks`:`${a}–${b} wks`;
+  const ma=mo(a), mb=mo(b);
+  if(ma===mb)return long?`at around ${ma} months`:`~${ma} mo`;
+  return long?`at ${ma} to ${mb} months`:`${ma}–${mb} mo`;
+}
+function todayStr(){return dayKey(Date.now())}
+function fmtDay(s){return new Date(s+'T12:00:00').toLocaleDateString([], {month:'short',day:'numeric',year:'numeric'})}
+function ageAt(s){
+  if(!profile.birth)return '';
+  const d=Math.round((new Date(s+'T12:00:00')-new Date(profile.birth+'T12:00:00'))/DAY);
+  if(d<0)return ''; if(d===0)return 'on day one';
+  if(d<14)return `at ${d} day${d===1?'':'s'} old`;
+  if(d<91)return `at ${Math.floor(d/7)} weeks old`;
+  const m=Math.floor(d/30.44); return `at ${m} month${m===1?'':'s'} old`;
+}
+function badgeSVG(m,got,size){
+  const c=got?msColor(m):'#C6D0D9', dark=mix(c,'#000000',.25), light=mix(c,'#FFFFFF',.5), id='bg'+(++avN);
+  return `<svg class="badgeart" viewBox="0 0 100 112" width="${size}" height="${Math.round(size*1.12)}" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${light}"/><stop offset="1" stop-color="${c}"/></linearGradient></defs>
+    ${got?`<path d="M30 76L21 106L35 99L43 110L50 86Z" fill="${dark}"/><path d="M70 76L79 106L65 99L57 110L50 86Z" fill="${dark}"/>`:''}
+    <path d="${HEX}" fill="url(#${id})" stroke="${got?dark:'#A9B5C0'}" stroke-width="3" stroke-linejoin="round" ${got?'':'stroke-dasharray="7 5"'}/>
+    <path d="${HEX_IN}" fill="none" stroke="#fff" stroke-opacity="${got?.6:.45}" stroke-width="2" stroke-linejoin="round"/>
+    ${got?'<ellipse cx="40" cy="27" rx="17" ry="7" fill="#fff" opacity=".35"/>':''}
+    <g transform="translate(32 32) scale(1.5)" fill="none" stroke="${got?'#fff':'#8D9AA6'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${got?(BADGE_IC[m.icon]||BADGE_IC.star):BADGE_IC.lock}</g>
+  </svg>`;
+}
+function milestonesHTML(){
+  const got=MS.filter(m=>milestones[m.key]).length, total=MS.length, avail=MS.filter(m=>!milestones[m.key]);
+  let opts='<option value="">Choose a milestone…</option>';
+  BANDS.forEach((b,i)=>{const list=avail.filter(m=>bandOf(m)===i);if(list.length)opts+=`<optgroup label="${b[0]}">${list.map(m=>`<option value="${m.key}"${sheet.pick===m.key?' selected':''}>${esc(m.name)}</option>`).join('')}</optgroup>`});
+  const lim=`max="${todayStr()}"${profile.birth?` min="${profile.birth}"`:''}`;
+  let h=`<h3>${IC.trophy}Milestones</h3>
+   <p class="hint">${got} of ${total} badges collected. Every baby has their own timeline, so there's no rush.</p>
+   <div class="msbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${got}"><i style="width:${Math.max(got?4:0,got/total*100)}%"></i></div>`;
+  h+=avail.length?`<div class="mslog"><label class="lbl" for="msSelect">Log a milestone</label><select id="msSelect">${opts}</select>
+     <div class="msrow"><input type="date" id="msDate" value="${esc(sheet.date||todayStr())}" ${lim} aria-label="Date it happened"><button class="primary" id="msSave">Unlock badge</button></div></div>`
+   :`<div class="mslog" style="text-align:center"><b>Every badge collected.</b> What a year.</div>`;
+  BANDS.forEach((b,i)=>{
+    const list=MS.filter(m=>bandOf(m)===i), n=list.filter(m=>milestones[m.key]).length;
+    h+=`<h4 class="msband">${b[0]}<span>${n} of ${list.length}</span></h4><div class="msgrid">${list.map(m=>{const g=milestones[m.key];
+      return `<button class="badge${g?' got':''}" data-ms="${m.key}" aria-label="${esc(m.name)}${g?', unlocked '+fmtDay(g.on):', locked'}">${badgeSVG(m,!!g,62)}<b>${esc(m.name)}</b><span>${g?fmtDay(g.on):winText(m)}</span></button>`}).join('')}</div>`;
+  });
+  return h;
+}
+function msDetailHTML(){
+  const m=MS_BY[sheet.key], g=milestones[sheet.key]; if(!m)return '';
+  const lim=`max="${todayStr()}"${profile.birth?` min="${profile.birth}"`:''}`;
+  return `<button class="ghost back" id="msBack">‹ All milestones</button>
+   <div class="msdetail">${badgeSVG(m,!!g,118)}
+    <h3>${esc(m.name)}</h3>
+    ${g?`<p class="msblurb">${esc(m.blurb)}</p><p class="hint">Unlocked ${fmtDay(g.on)}${ageAt(g.on)?' · '+esc(profile.name)+' was '+ageAt(g.on).replace(/^at /,''):''}</p>`
+       :`<p class="hint">Usually ${winText(m,true)}. Unlock it to reveal its story.</p>`}
+   </div>
+   <label class="lbl" for="msDate">${g?'Change the date':'When did it happen?'}</label>
+   <div class="msrow"><input type="date" id="msDate" value="${g?g.on:todayStr()}" ${lim}><button class="primary" id="${g?'msRedate':'msUnlock'}">${g?'Save date':'Unlock badge'}</button></div>
+   ${g?'<button class="danger" id="msRemove">Remove this badge</button>':''}`;
+}
+function msRefresh(){if(sheet&&(sheet.kind==='milestones'||sheet.kind==='msdetail'))drawSheet();render()}
+function msRow(rec){return {id:rec.id,baby_id:baby.id,key:rec.key,name:rec.name,achieved_on:rec.on}}
+function clampDay(on){const t=todayStr();if(!on||on>t)on=t;if(profile.birth&&on<profile.birth)on=profile.birth;return on}
+function unlockMilestone(key,on){
+  const m=MS_BY[key]; if(!m)return;
+  on=clampDay(on);
+  const prev=milestones[key], rec={id:prev?prev.id:uid(),key,name:m.name,on};
+  milestones[key]=rec; msRefresh();
+  send(CLOUD?{kind:'ms_upsert',row:msRow(rec)}:null,()=>{if(prev)milestones[key]=prev;else delete milestones[key];msRefresh()});
+  if(!prev)celebrate(m,rec);
+}
+function restoreMilestone(rec){milestones[rec.key]=rec;msRefresh();send(CLOUD?{kind:'ms_upsert',row:msRow(rec)}:null,()=>{delete milestones[rec.key];msRefresh()})}
+function removeMilestone(key){
+  const cur=milestones[key]; if(!cur)return;
+  delete milestones[key]; msRefresh();
+  send(CLOUD?{kind:'ms_delete',baby_id:baby.id,key}:null,()=>{milestones[key]=cur;msRefresh()});
+  showToast('Badge removed',()=>restoreMilestone(cur));
+}
+function celebrate(m,rec){
+  const age=ageAt(rec.on);
+  $('#unlock').innerHTML=`<div class="unlockcard" role="dialog" aria-modal="true" aria-labelledby="unlockTitle"><div class="rays"></div>
+    <div class="ubadge">${badgeSVG(m,true,132)}</div>
+    <small>Milestone unlocked</small><h3 id="unlockTitle">${esc(m.name)}</h3>
+    <p>${esc(m.blurb)}</p>
+    <p class="udate">${fmtDay(rec.on)}${age?' · '+esc(profile.name)+' '+age:''}</p>
+    <button class="primary" id="unlockOk">Collect badge</button></div>`;
+  $('#unlock').hidden=false; fanfare(); setTimeout(()=>{const b=$('#unlockOk');b&&b.focus()},50);
+}
+$('#unlock').addEventListener('click',e=>{
+  if(e.target.id!=='unlock'&&e.target.id!=='unlockOk')return;
+  $('#unlock').hidden=true; $('#unlock').innerHTML='';
+  if(reopenMs){reopenMs=false;sheet={kind:'milestones'};drawSheet();$('#sheetWrap').hidden=false}
+});
+function fanfare(){
+  if(!profile.sound)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const t=actx.currentTime;[523,659,784,1047].forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='triangle';o.frequency.value=f;const d=i*0.11;g.gain.setValueAtTime(0.0001,t+d);g.gain.exponentialRampToValueAtTime(0.14,t+d+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d+(i===3?0.6:0.22));o.connect(g).connect(actx.destination);o.start(t+d);o.stop(t+d+0.7)});
+  }catch(_){}
+}
+async function loadMilestones(){
+  if(!baby)return;
+  const {data,error}=await sb.from('milestones').select('*').eq('baby_id',baby.id);
+  if(error)return;
+  const next={};
+  data.forEach(r=>next[r.key]={id:r.id,key:r.key,name:r.name,on:r.achieved_on});
+  outbox.forEach(op=>{if(op.kind==='ms_upsert'&&op.row.baby_id===baby.id)next[op.row.key]={id:op.row.id,key:op.row.key,name:op.row.name,on:op.row.achieved_on};if(op.kind==='ms_delete'&&op.baby_id===baby.id)delete next[op.key]});
+  milestones=next; msRefresh();
+}
+async function fetchAllMilestones(){const {data,error}=await sb.from('milestones').select('*').eq('baby_id',baby.id).order('achieved_on');if(error)throw error;return data}
 
 /* ---------- sound ---------- */
 let actx=null;
@@ -580,6 +739,8 @@ function drawSheet(){
   } else if(k==='settings'){ h=settingsHTML(); }
   else if(k==='history'){ h=historyHTML(); }
   else if(k==='babies'){ h=babiesHTML(); }
+  else if(k==='milestones'){ h=milestonesHTML(); }
+  else if(k==='msdetail'){ h=msDetailHTML(); }
   h+=`<button class="ghost" id="closeSheet">Close</button>`;
   const sc=$('#sheet').scrollTop;
   $('#sheet').innerHTML=h; $('#sheet').scrollTop=sc;
@@ -691,12 +852,12 @@ async function fetchAllEvents(){
 }
 async function exportData(kind){
   try{
-    const rows=await fetchAllEvents();
+    const rows=await fetchAllEvents(), ms=await fetchAllMilestones();
     const slug=(profile.name||'baby').toLowerCase().replace(/[^a-z0-9]+/g,'-');
-    if(kind==='json'){download(`just-a-baby-${slug}.json`,'application/json',JSON.stringify({baby:rowFromProfile(profile),events:rows.map(rowToEvent).map(e=>Object.assign({},e,{t:new Date(e.t).toISOString(),end:e.end?new Date(e.end).toISOString():e.end}))},null,2));}
+    if(kind==='json'){download(`just-a-baby-${slug}.json`,'application/json',JSON.stringify({baby:rowFromProfile(profile),events:rows.map(rowToEvent).map(e=>Object.assign({},e,{t:new Date(e.t).toISOString(),end:e.end?new Date(e.end).toISOString():e.end})),milestones:ms.map(r=>({key:r.key,name:r.name,achieved_on:r.achieved_on}))},null,2));}
     else{
       const q=v=>v==null?'':/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
-      const lines=[['start','end','type','detail','amount_ml'].join(',')].concat(rows.map(r=>[r.t,r.end_t,r.type,r.sub,r.amount].map(q).join(',')));
+      const lines=[['start','end','type','detail','amount_ml'].join(',')].concat(rows.map(r=>[r.t,r.end_t,r.type,r.sub,r.amount].map(q).join(','))).concat(ms.map(r=>[r.achieved_on,'','milestone',r.name,''].map(q).join(',')));
       download(`just-a-baby-${slug}.csv`,'text/csv',lines.join('\n'));
     }
   }catch(err){showToast('Couldn’t prepare the download. Check your connection and try again.')}
@@ -710,6 +871,7 @@ $('#actions').addEventListener('click',e=>{
   openSheet(k);
 });
 $('#settingsBtn').addEventListener('click',openSettings);
+$('#milestonesBtn').addEventListener('click',()=>{sheet={kind:'milestones'};drawSheet();$('#sheet').scrollTop=0;$('#sheetWrap').hidden=false});
 $('#historyBtn').addEventListener('click',()=>{sheet={kind:'history'};drawSheet();$('#sheetWrap').hidden=false});
 $('#nameBtn').addEventListener('click',()=>{if(!CLOUD){openSettings();return}sheet={kind:'babies'};drawSheet();$('#sheetWrap').hidden=false});
 $('#sheetWrap').addEventListener('click',e=>{if(e.target.id==='sheetWrap')closeSheet()});
@@ -718,6 +880,8 @@ $('#sheet').addEventListener('change',e=>{
   if(!sheet)return;
   if(sheet.kind==='settings'&&(e.target.id==='setBirth'||e.target.id==='paci')){readDraftInputs();drawSheet()}
   if(e.target.id==='customTime')sheet.custom=e.target.value;
+  if(sheet.kind==='milestones'&&e.target.id==='msSelect')sheet.pick=e.target.value;
+  if(sheet.kind==='milestones'&&e.target.id==='msDate')sheet.date=e.target.value;
 });
 $('#sheet').addEventListener('click',async e=>{
   const t=e.target.closest('button'); if(!t||!sheet)return;
@@ -727,6 +891,15 @@ $('#sheet').addEventListener('click',async e=>{
     t.classList.add('arm');t.textContent='Remove?';setTimeout(()=>{if(t.isConnected){t.classList.remove('arm');t.textContent='Remove'}},3000);return;
   }
   if(t.dataset.baby){const b=babies.find(x=>x.id===t.dataset.baby);closeSheet();if(b)openBaby(b);return}
+  if(t.dataset.ms){sheet={kind:'msdetail',key:t.dataset.ms};drawSheet();$('#sheet').scrollTop=0;return}
+  if(t.id==='msBack'){sheet={kind:'milestones'};drawSheet();return}
+  if(t.id==='msSave'){const k=$('#msSelect').value;if(!k){$('#msSelect').focus();showToast('Choose a milestone from the list first.');return}const d=$('#msDate').value;closeSheet();reopenMs=true;unlockMilestone(k,d);return}
+  if(t.id==='msUnlock'){const k=sheet.key,d=$('#msDate').value;closeSheet();reopenMs=true;unlockMilestone(k,d);return}
+  if(t.id==='msRedate'){const d=$('#msDate').value;if(d){const k=sheet.key;sheet={kind:'milestones'};unlockMilestone(k,d);showToast('Date updated')}return}
+  if(t.id==='msRemove'){
+    if(!t.classList.contains('arm')){t.classList.add('arm');t.textContent='Tap again to remove';setTimeout(()=>{if(t.isConnected){t.classList.remove('arm');t.textContent='Remove this badge'}},3000);return}
+    const k=sheet.key;sheet={kind:'milestones'};removeMilestone(k);return;
+  }
   if(t.id==='addBaby'){closeSheet();showSetup(true);return}
   if(t.dataset.when){sheet.when=t.dataset.when;const c=$('#customTime');if(c)sheet.custom=c.value;drawSheet();return}
   if(t.dataset.sub){sheet.sub=t.dataset.sub;drawSheet();return}
@@ -835,11 +1008,11 @@ $('#setupForm').addEventListener('submit',async e=>{
 /* ---------- boot ---------- */
 async function openBaby(b){
   baby=b;lsSet(LS.baby,b.id);
-  profile=profileFromRow(b);events={};lastFaceKey='';
+  profile=profileFromRow(b);events={};milestones={};lastFaceKey='';
   const {data:m}=await sb.from('baby_members').select('role').eq('baby_id',b.id).eq('user_id',user.id).maybeSingle();
   myRole=m&&m.role||'caregiver';
   show('appScreen');render();
-  await loadEvents();subscribe();flushOutbox();
+  await Promise.all([loadEvents(),loadMilestones()]);subscribe();flushOutbox();
 }
 let signedInAs=null;
 async function afterSignIn(u,force){
@@ -861,7 +1034,7 @@ async function afterSignIn(u,force){
   openBaby(b);
 }
 function afterSignOut(){
-  signedInAs=null;user=null;baby=null;babies=[];events={};
+  signedInAs=null;user=null;baby=null;babies=[];events={};milestones={};
   if(channel){sb.removeChannel(channel);channel=null}
   showAuth();
 }
@@ -881,7 +1054,7 @@ async function boot(){
   });
 }
 setInterval(render,30000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();if(CLOUD&&baby){flushOutbox();loadEvents()}}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();if(CLOUD&&baby){flushOutbox();loadEvents();loadMilestones()}}});
 window.addEventListener('online',flushOutbox);
 if(CLOUD)$('#offlinePill').hidden=!outbox.length;
 boot();

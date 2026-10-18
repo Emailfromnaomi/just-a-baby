@@ -16,6 +16,7 @@ A baby tracker that reads like a life-sim game. Instead of charts and forms, you
 - **Mood and moodlets.** The bars roll up into one mood (Happy, Content, Fussy, Needs you, Sleeping). Moodlets such as *Full Tummy*, *Well Rested* and *Diaper Check* call out what's going on right now.
 - **Quick logging.** Feed, Nap, Diaper, Play and Bath are one or two taps each. It remembers which breast side is next and your usual bottle amount. Every log has Undo, and you can backdate it.
 - **A portrait of your baby.** You build a shoulders-up portrait from skin tone, hair, eye and outfit options. The face reacts to the mood.
+- **Milestones.** 32 collectable badges from coming home to the first birthday. Pick one from the list, set the date, and it unlocks with a short game-style blurb. Every baby has their own timeline, so nothing is ever marked late.
 - **History.** Today's totals (feeds, ml, sleep, diapers) and the last 48 hours of entries.
 
 ![Logging a feed in two taps](docs/images/log-a-feed.jpg)
@@ -47,6 +48,7 @@ To turn on accounts, follow **[SETUP.md](SETUP.md)**. It takes about 20 minutes.
 | `index.html` | Markup for the sign-in, add-a-baby and main screens |
 | `app.css` | All styles, with light and dark themes |
 | `app.js` | The app: need math, portrait, logging, storage, sign-in |
+| `milestones.js` | The milestone badge list: names, typical age windows and blurbs |
 | `config.js` | Supabase URL and anon key (empty = local mode) |
 | `supabase/schema.sql` | Tables, row-level security and RPCs. Paste into Supabase once. |
 | `supabase/tests/` | Plain-Postgres tests of the access rules |
@@ -65,6 +67,7 @@ The app stores **events**, not bar values. Each bar is recomputed from timestamp
 | `babies` | name, birthday, `settings` (drain intervals, units, sound) and `look` (portrait options) as JSON |
 | `baby_members` | who can see a baby: `owner` or `caregiver` |
 | `events` | `type` (feed, sleep, diaper, play, bath), `t`, `end_t` (naps), `sub` (bottle, left, wet…), `amount` (ml) |
+| `milestones` | one row per collected badge: `key`, `name`, `achieved_on`. Unique per baby |
 | `invites` | single-use codes that expire after 7 days |
 
 Every table has row-level security, so a signed-in person only ever reads or writes babies they belong to. Creating a baby, accepting an invite and deleting an account go through `SECURITY DEFINER` functions, so those rules can't be skipped.

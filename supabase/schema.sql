@@ -188,3 +188,34 @@ do $$ begin
   begin alter publication supabase_realtime add table public.events; exception when duplicate_object then null; end;
   begin alter publication supabase_realtime add table public.babies; exception when duplicate_object then null; end;
 end $$;
+
+-- ─────────────────────────────────────────────────────────────
+-- Milestones: collectable badges, one per milestone per baby
+-- `key` is the app's catalog id (for example "first_smile"); `name` is stored
+-- too so emails and exports can show it without the app's catalog.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.milestones (
+  id           text primary key check (char_length(id) between 6 and 40),
+  baby_id      uuid not null references public.babies(id) on delete cascade,
+  key          text not null check (key ~ '^[a-z0-9_]{2,40}$'),
+  name         text not null check (char_length(name) between 1 and 60),
+  achieved_on  date not null,
+  created_by   uuid default auth.uid() references auth.users(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  unique (baby_id, key)
+);
+create index if not exists milestones_baby_idx on public.milestones(baby_id, achieved_on);
+alter table public.milestones enable row level security;
+
+drop policy if exists milestones_select on public.milestones;
+drop policy if exists milestones_insert on public.milestones;
+drop policy if exists milestones_update on public.milestones;
+drop policy if exists milestones_delete on public.milestones;
+create policy milestones_select on public.milestones for select using (public.is_member(baby_id));
+create policy milestones_insert on public.milestones for insert with check (public.is_member(baby_id));
+create policy milestones_update on public.milestones for update using (public.is_member(baby_id)) with check (public.is_member(baby_id));
+create policy milestones_delete on public.milestones for delete using (public.is_member(baby_id));
+
+do $$ begin
+  begin alter publication supabase_realtime add table public.milestones; exception when duplicate_object then null; end;
+end $$;

@@ -39,6 +39,10 @@ Use these as `{{ customer.<name> }}` in Liquid. Timestamps are Unix seconds, so 
 | `logs_last_7_days` | number | `38` | |
 | `first_logged_at` | timestamp | | |
 | `last_logged_at` | timestamp | | For "hasn't logged in 3 days" segments |
+| `milestones_count` | number | `4` | Badges collected for their first baby |
+| `latest_milestone_key` | string | `first_smile` | Most recent by date. Keys are listed in `milestones.js` |
+| `latest_milestone_name` | string | `First Real Smile` | |
+| `latest_milestone_at` | timestamp | | The milestone date at noon UTC |
 | `app` | string | `just-a-baby` | |
 
 ## Events
@@ -54,6 +58,7 @@ Use event data as `{{ event.<name> }}` in a campaign triggered by that event.
 | `caregiver_joined` | Someone accepts *their* invite (sent to the owner) | `baby_id`, `baby_name` |
 | `baby_updated` | Name, birthday or units change (sent to everyone on that baby) | `baby_id`, `baby_name`, `baby_birth_date` |
 | `first_log` | Their first entry | `log_type` (feed/sleep/diaper/play/bath), `baby_id`, `baby_name` |
+| `milestone_unlocked` | A badge is collected (sent to everyone on that baby) | `milestone_key`, `milestone_name`, `achieved_on` (YYYY-MM-DD), `achieved_at` (timestamp), `logged_by_me` (true/false), `baby_id`, `baby_name` |
 | `log_milestone` | Their 10th, 25th, 50th, 100th, 250th, 500th, 1000th… entry | `total_logs` |
 
 ## Liquid examples
@@ -85,10 +90,21 @@ Nudge solo parents to invite a partner:
 {% endif %}
 ```
 
-Milestone email (triggered by `log_milestone`):
+Log-count email (triggered by `log_milestone`):
 
 ```liquid
 That's {{ event.total_logs }} entries for {{ customer.baby_name }}. Nice work.
+```
+
+Badge email (triggered by `milestone_unlocked`):
+
+```liquid
+{% if event.logged_by_me %}
+  You logged {{ event.milestone_name }} for {{ event.baby_name }}.
+{% else %}
+  {{ event.baby_name }} just unlocked {{ event.milestone_name }}.
+{% endif %}
+That's {{ customer.milestones_count }} badges so far.
 ```
 
 ## Campaign ideas
@@ -98,6 +114,7 @@ That's {{ event.total_logs }} entries for {{ customer.baby_name }}. Nice work.
 - **Partner invite:** owners with `caregivers_count = 1` three days after `first_log`.
 - **Partner welcome:** trigger on `joined_as_caregiver`, with a short "how to read the bars".
 - **Win-back:** segment where `last_logged_at` is more than 3 days ago and `total_logs > 5`.
+- **Badge celebrations:** trigger on `milestone_unlocked`, with a filter on `milestone_key` for the big ones (`first_steps`, `first_word`, `first_birthday`).
 - **Beta check-ins:** day 3 and day 14 after `signed_up`, as in [BETA-PLAN.md](BETA-PLAN.md).
 
 ## Setup (already done for justababy.ca)
