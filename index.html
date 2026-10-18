@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-<link rel="stylesheet" href="app.css?v=202610181012">
+<link rel="stylesheet" href="app.css?v=202610181210">
 </head>
 <body>
 
@@ -93,18 +93,27 @@
       <div class="portrait" id="portrait">
         <button class="baby" id="baby" aria-label="Tap the baby"></button>
         <div class="speech off" id="speech">Goo!</div>
+        <div class="whim" id="whim" hidden></div>
         <div class="samplepill" id="samplePill" hidden>Sample day · log something to start</div>
       </div>
       <div class="status">
-        <div class="moodtag"><i></i><span id="moodLabel">Content</span></div>
-        <div id="moodlets" style="display:flex;gap:6px"></div>
+        <div class="tagline">
+          <p class="emotion" id="emotionLine">Emotion: Fine.</p>
+          <p class="emotionsub" id="emotionSub"></p>
+        </div>
+        <div class="moodlets" id="moodlets"></div>
       </div>
     </section>
 
-    <section class="hud" aria-label="Needs">
-      <div class="needs" id="needs"></div>
-    </section>
+    <div class="side">
+      <section class="hud" aria-label="Needs">
+        <div class="needs" id="needs"></div>
+      </section>
+      <section class="mscard" id="msCard" aria-label="Milestones"></section>
+    </div>
   </main>
+
+  <section class="today" id="today" aria-label="Today so far"></section>
 </div>
 
 <nav class="actionbar" aria-label="Log something">
@@ -118,8 +127,8 @@
 <div class="offline" id="offlinePill" hidden>Saved on this phone. Syncing when you're back online.</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=202610181012"></script>
-<script src="milestones.js?v=202610181012"></script>
-<script src="app.js?v=202610181012"></script>
+<script src="config.js?v=202610181210"></script>
+<script src="milestones.js?v=202610181210"></script>
+<script src="app.js?v=202610181210"></script>
 </body>
 </html>

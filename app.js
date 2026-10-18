@@ -140,6 +140,71 @@ function moodlets(needs){
   return L.sort((a,b)=>(a[0]==='bad'?0:1)-(b[0]==='bad'?0:1));
 }
 
+/* ---------- deadpan lines ---------- */
+const NEED_NAME={hunger:'Hunger',energy:'Energy',hygiene:'Hygiene',social:'Social'};
+function isNight(){const h=new Date().getHours();return h>=22||h<6}
+function lowestNeed(needs){
+  let low=null,lv=101;
+  ['hunger','energy','hygiene','social'].forEach(k=>{if(k==='energy'&&needs.energy.sleeping)return;const v=needs[k].v;if(v!=null&&v<lv){lv=v;low=k}});
+  return low?{k:low,v:lv,name:NEED_NAME[low]}:null;
+}
+function emotionCopy(needs,md){
+  const night=isNight(), low=lowestNeed(needs), s=sleepingNow();
+  if(CLOUD&&Object.keys(events).length===0)return ['Emotion: Fine. Probably.','Log anything. The bars take it from there.'];
+  if(s){
+    const sl=Date.now()-s.t;
+    if(sl>12*HR)return ['Emotion: Asleep. Allegedly.',`Asleep for ${dur(sl)}. Tap Wake up if that nap's over.`];
+    if(night)return ['Emotion: Asleep.',`Since ${clock(s.t)}. Go get some rest.`];
+    return ['Emotion: Asleep. Finally.',`Out cold since ${clock(s.t)}.`+(low&&low.v<40?` ${low.name} will come up first.`:'')];
+  }
+  if(md.label==='Happy')return night?['Emotion: Happy.','']:['Emotion: Happy. Enjoy it.','All four bars look good.'];
+  if(md.label==='Content')return night?['Emotion: Fine.','']:['Emotion: Fine. Suspiciously fine.',low&&low.v<60?`${low.name} is next on the list.`:'Nothing needs you right now.'];
+  if(md.label==='Fussy')return ['Emotion: Fussy.',low?`${low.name} is the likely suspect.`:''];
+  return ['Emotion: Not thrilled.',low?`${low.name} bar is the lowest. Start there.`:''];
+}
+const WHIMS={hunger:'Whim: milk. Now, ideally.',energy:'Whim: a nap. Somewhere inconvenient.',hygiene:'Whim: a fresh diaper. Today.',social:'Whim: be held. Standing. Not sitting.'};
+function whimCopy(needs,md){
+  if(needs.energy.sleeping)return 'Whim: five more minutes.';
+  const low=lowestNeed(needs);
+  if(low&&low.v<50)return WHIMS[low.k];
+  if(md.label==='Happy')return 'Whim: more of this.';
+  return '';
+}
+
+/* ---------- today so far ---------- */
+const TODAY_WORD={feed:['feed','feeds'],sleep:['nap','naps'],diaper:['change','changes'],play:['playtime','playtimes'],bath:['bath','baths']};
+function evLabel(e){if(e.type==='sleep')return 'Nap';if(e.type==='play')return SUBS.play[e.sub]||'Play';return TYPE_LABEL[e.type]||'Log'}
+function todayHTML(){
+  const start=new Date();start.setHours(0,0,0,0);
+  const list=all().filter(e=>e.t>=start.getTime());
+  const h=new Date().getHours(), night=isNight();
+  let line;
+  if(!list.length)line=h<12?'Nothing logged yet today.':'Nothing logged today. Bold strategy.';
+  else{
+    const parts=['feed','sleep','diaper','play','bath'].map(k=>{const n=list.filter(e=>e.type===k).length;return n?n+' '+TODAY_WORD[k][n===1?0:1]:null}).filter(Boolean);
+    const n=list.length;
+    const tail=night?'':n<=3?' A gentle start.':n<=8?(h<12?' A respectable morning.':' A respectable day.'):' Busy. Noted.';
+    line=parts.join(', ')+'.'+tail;
+  }
+  const chips=list.slice(0,4).reverse().map(e=>`<span>${esc(clock(e.t))} ${esc(evLabel(e))}</span>`).join('');
+  return `<div class="tl"><b>Today so far</b><span>${esc(line)}</span></div>${chips?`<div class="evs">${chips}</div>`:''}<button class="seeall" id="todayAll">See all</button>`;
+}
+
+/* ---------- milestones card ---------- */
+function msCardHTML(){
+  const gotList=MS.filter(m=>milestones[m.key]).sort((a,b)=>(milestones[b.key].on||'').localeCompare(milestones[a.key].on||''));
+  const recent=gotList[0], next=MS.filter(m=>!milestones[m.key]).slice(0,3);
+  const name=profile.name&&profile.name!=='Baby'?profile.name+"'s":'they\'re';
+  const weekAgo=dayKey(Date.now()-7*DAY);
+  const mini=(m,got)=>{const g=milestones[m.key];
+    return `<button class="mini${got?' got':''}" data-ms="${m.key}" aria-label="${esc(m.name)}${got?', unlocked '+fmtDay(g.on):', not logged yet'}">${got&&g.on>=weekAgo?'<span class="new">New</span>':''}${badgeSVG(m,got,46)}<b>${esc(m.name)}</b><span>${got?esc(new Date(g.on+'T12:00:00').toLocaleDateString([], {month:'short',day:'numeric'})):esc(m.cat||winText(m))}</span></button>`};
+  let h=`<div class="mshead"><b>Milestones</b><span>${gotList.length} of ${MS.length} logged</span><button class="seeall" id="msAll">See all</button></div><div class="msrowcard">
+    <div class="mslbl recent">Recent</div><div class="mslbl next">${next.length?`Up next, whenever ${esc(name==="they're"?"they're":name)} ready`:'All collected'}</div>`;
+  h+=recent?mini(recent,true):`<div class="msnone">Nothing yet. No rush.</div>`;
+  h+=next.map(m=>mini(m,false)).join('');
+  return h+'</div>';
+}
+
 /* ---------- portrait ---------- */
 let avN=0;
 function qp(p0,c,p2,t){const u=1-t;return [u*u*p0[0]+2*u*t*c[0]+t*t*p2[0],u*u*p0[1]+2*u*t*c[1]+t*t*p2[1]]}
@@ -365,7 +430,10 @@ function render(){
   $('#samplePill').hidden=!(usingSample()||empty);
   $('#samplePill').textContent=empty?'Log a feed, nap or diaper to fill the bars':'Sample day · log something to start';
   document.documentElement.style.setProperty('--mood',colorFor(md.v));
-  $('#moodLabel').textContent=md.label;
+  const [eLine,eSub]=emotionCopy(needs,md); $('#emotionLine').textContent=eLine; $('#emotionSub').textContent=eSub;
+  const wh=$('#samplePill').hidden?whimCopy(needs,md):''; if($('#whim').textContent!==wh)$('#whim').textContent=wh; $('#whim').hidden=!wh;
+  $('#msCard').innerHTML=msCardHTML();
+  $('#today').innerHTML=todayHTML();
   const fk=JSON.stringify(profile.look)+md.face;
   if(fk!==lastFaceKey){$('#baby').innerHTML=avatarSVG(profile.look,md.face);lastFaceKey=fk;}
   $('#moodlets').innerHTML=moodlets(needs).map(m=>`<div class="moodlet ${m[0]}"><div class="mi">${m[1]}</div>${m[2]}</div>`).join('');
@@ -379,8 +447,10 @@ function render(){
 }
 function renderActions(){
   const s=sleepingNow();
+  const n=Date.now(), f=lastOf('feed'), d=lastOf('diaper'), b=lastOf('bath');
+  const due={feed:!!(f&&n-f.t>5*HR),diaper:!!(d&&n-Math.max(d.t,b?b.t:0)>DAY)};
   const acts=[['feed','Feed','bottle'],['sleep',s?'Wake up':'Nap',s?'sun':'moon'],['diaper','Diaper','diaper'],['play','Play','rattle'],['bath','Bath','tub']];
-  $('#actions').innerHTML=acts.map(([k,l,ic])=>`<button class="act${k==='sleep'&&s?' on':''}" data-act="${k}">${IC[ic]}<span>${l}</span></button>`).join('');
+  $('#actions').innerHTML=acts.map(([k,l,ic])=>`<button class="act${k==='sleep'&&s?' on':''}" data-act="${k}">${IC[ic]}<span>${l}</span>${due[k]?'<i class="due" aria-label="Overdue"></i>':''}</button>`).join('');
 }
 function historyHTML(){
   const n=Date.now(), mid=new Date(); mid.setHours(0,0,0,0); const m0=mid.getTime();
@@ -698,6 +768,7 @@ function babble(){
   let low=null,lv=101;['hunger','energy','hygiene','social'].forEach(k=>{const v=needs[k].v;if(v!=null&&v<lv){lv=v;low=k}});
   const pool=lv<40?BABBLE[low]:BABBLE.happy; say(pool[Math.floor(Math.random()*pool.length)]); blip(true);
 }
+function hop(){const b=$('#baby');b.classList.remove('hop');void b.offsetWidth;b.classList.add('hop');setTimeout(()=>b.classList.remove('hop'),700)}
 function say(t){const s=$('#speech');s.textContent=t;s.classList.remove('off');clearTimeout(speechT);speechT=setTimeout(()=>s.classList.add('off'),2400)}
 $('#baby').addEventListener('click',babble);
 
@@ -753,14 +824,14 @@ function logFrom(kind,sub){
   if(kind==='feed'&&sub==='bottle'){ev.amount=Math.round(sheet.amount);profile.lastAmount=ev.amount;saveProfile();}
   if(kind==='sleep')ev.end=null;
   const wasSample=usingSample();
-  closeSheet(); putEvent(ev); blip(true);
+  closeSheet(); putEvent(ev); blip(true); hop();
   const lbl=kind==='sleep'?'Nap started':`${sub&&SUBS[kind]?SUBS[kind][sub]:TYPE_LABEL[kind]} logged`;
   showToast(lbl+(t<Date.now()-2*MIN?` for ${clock(t)}`:'')+(wasSample?'. Sample cleared.':''),()=>removeEvent(ev.id));
 }
 function wakeUp(){
   const s=sleepingNow(); if(!s)return;
   if(usingSample()){showToast('That nap is part of the sample. Start a real nap to try it.');return}
-  const end=Date.now(); patchEvent(s.id,{end}); blip(false);
+  const end=Date.now(); patchEvent(s.id,{end}); blip(false); hop();
   showToast(`Awake after ${dur(end-s.t)}`,()=>patchEvent(s.id,{end:null}));
 }
 
@@ -874,6 +945,12 @@ $('#actions').addEventListener('click',e=>{
 $('#settingsBtn').addEventListener('click',openSettings);
 $('#milestonesBtn').addEventListener('click',()=>{sheet={kind:'milestones'};drawSheet();$('#sheet').scrollTop=0;$('#sheetWrap').hidden=false});
 $('#historyBtn').addEventListener('click',()=>{sheet={kind:'history'};drawSheet();$('#sheetWrap').hidden=false});
+$('#today').addEventListener('click',e=>{if(e.target.closest('#todayAll')){sheet={kind:'history'};drawSheet();$('#sheetWrap').hidden=false}});
+$('#msCard').addEventListener('click',e=>{
+  if(e.target.closest('#msAll')){sheet={kind:'milestones'};drawSheet();$('#sheet').scrollTop=0;$('#sheetWrap').hidden=false;return}
+  const b=e.target.closest('[data-ms]'); if(!b)return;
+  const k=b.dataset.ms; sheet=milestones[k]?{kind:'msdetail',key:k}:{kind:'milestones',pick:k}; drawSheet(); $('#sheet').scrollTop=0; $('#sheetWrap').hidden=false;
+});
 $('#nameBtn').addEventListener('click',()=>{if(!CLOUD){openSettings();return}sheet={kind:'babies'};drawSheet();$('#sheetWrap').hidden=false});
 $('#sheetWrap').addEventListener('click',e=>{if(e.target.id==='sheetWrap')closeSheet()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheet)closeSheet()});
