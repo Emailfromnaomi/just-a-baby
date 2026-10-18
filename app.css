@@ -212,7 +212,9 @@ select{font:inherit;color:var(--ink);background:var(--card);border:2px solid var
 .back{width:auto;margin:0 0 2px;padding:0;text-align:left;min-height:36px;font-weight:700}
 .msdetail{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
 .msdetail h3{justify-content:center;margin-top:4px}
-.msblurb{font-size:16px;line-height:1.5;max-width:34ch;margin:2px auto 4px}
+.msdesc{font-size:16px;line-height:1.45;max-width:34ch;margin:0 auto 4px;font-weight:700}
+.msblurb{font-size:15px;line-height:1.5;max-width:34ch;margin:4px auto;padding:10px 14px;border-radius:14px;background:rgba(127,140,160,.13);font-style:italic}
+.msdesc-pick{margin:8px 2px 0;line-height:1.4}
 .unlock{position:fixed;inset:0;z-index:70;background:rgba(10,20,35,.62);display:grid;place-items:center;padding:16px}
 .unlockcard{position:relative;overflow:hidden;width:100%;max-width:380px;border-radius:26px;padding:26px 22px 22px;text-align:center;color:var(--panel-ink);background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid color-mix(in srgb,var(--edge) 50%,transparent);box-shadow:0 24px 60px rgba(0,0,0,.4);animation:up .25s ease-out}
 .unlockcard > :not(.rays){position:relative}

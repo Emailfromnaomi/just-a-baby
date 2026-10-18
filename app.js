@@ -599,7 +599,7 @@ function milestonesHTML(){
   let h=`<h3>${IC.trophy}Milestones</h3>
    <p class="hint">${got} of ${total} badges collected. Every baby has their own timeline, so there's no rush.</p>
    <div class="msbar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${got}"><i style="width:${Math.max(got?4:0,got/total*100)}%"></i></div>`;
-  h+=avail.length?`<div class="mslog"><label class="lbl" for="msSelect">Log a milestone</label><select id="msSelect">${opts}</select>
+  h+=avail.length?`<div class="mslog"><label class="lbl" for="msSelect">Log a milestone</label><select id="msSelect">${opts}</select><p class="hint msdesc-pick" id="msPickDesc"${sheet.pick&&MS_BY[sheet.pick]?'':' hidden'}>${sheet.pick&&MS_BY[sheet.pick]?esc(MS_BY[sheet.pick].desc||''):''}</p>
      <div class="msrow"><input type="date" id="msDate" value="${esc(sheet.date||todayStr())}" ${lim} aria-label="Date it happened"><button class="primary" id="msSave">Unlock badge</button></div></div>`
    :`<div class="mslog" style="text-align:center"><b>Every badge collected.</b> What a year.</div>`;
   BANDS.forEach((b,i)=>{
@@ -615,6 +615,7 @@ function msDetailHTML(){
   return `<button class="ghost back" id="msBack">‹ All milestones</button>
    <div class="msdetail">${badgeSVG(m,!!g,118)}
     <h3>${esc(m.name)}</h3>
+    <p class="msdesc">${esc(m.desc||'')}</p>
     ${g?`<p class="msblurb">${esc(m.blurb)}</p><p class="hint">Unlocked ${fmtDay(g.on)}${ageAt(g.on)?' · '+esc(profile.name)+' was '+ageAt(g.on).replace(/^at /,''):''}</p>`
        :`<p class="hint">Usually ${winText(m,true)}. Unlock it to reveal its story.</p>`}
    </div>
@@ -880,7 +881,7 @@ $('#sheet').addEventListener('change',e=>{
   if(!sheet)return;
   if(sheet.kind==='settings'&&(e.target.id==='setBirth'||e.target.id==='paci')){readDraftInputs();drawSheet()}
   if(e.target.id==='customTime')sheet.custom=e.target.value;
-  if(sheet.kind==='milestones'&&e.target.id==='msSelect')sheet.pick=e.target.value;
+  if(sheet.kind==='milestones'&&e.target.id==='msSelect'){sheet.pick=e.target.value;const d=$('#msPickDesc'),m=MS_BY[sheet.pick];if(d){d.textContent=m?m.desc||'':'';d.hidden=!m}}
   if(sheet.kind==='milestones'&&e.target.id==='msDate')sheet.date=e.target.value;
 });
 $('#sheet').addEventListener('click',async e=>{
