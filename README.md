@@ -39,6 +39,8 @@ There are two modes, chosen by [`config.js`](config.js):
 | **Local** | `config.js` left empty | No accounts, a sample day, entries saved in this browser only. Good for demos and UI work. |
 | **Accounts** | Supabase URL and anon key filled in | Email sign-in, your own babies, invite links for caregivers, live sync, offline queue, export and delete. |
 
+When you change `app.css`, `app.js`, `milestones.js` or `config.js`, bump the `?v=` number on their links in `index.html` so browsers fetch the new files straight away.
+
 To turn on accounts, follow **[SETUP.md](SETUP.md)**. It takes about 20 minutes.
 
 ## Files
