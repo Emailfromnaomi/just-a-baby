@@ -162,12 +162,12 @@ function emotionCopy(needs,md){
   if(md.label==='Fussy')return ['Emotion: Fussy.',low?`${low.name} is the likely suspect.`:''];
   return ['Emotion: Not thrilled.',low?`${low.name} bar is the lowest. Start there.`:''];
 }
-const WHIMS={hunger:'Whim: milk. Now, ideally.',energy:'Whim: a nap. Somewhere inconvenient.',hygiene:'Whim: a fresh diaper. Today.',social:'Whim: be held. Standing. Not sitting.'};
+const WHIMS={hunger:'Milk. Now, ideally.',energy:'A nap. Somewhere inconvenient.',hygiene:'A fresh diaper. Today.',social:'Be held. Standing. Not sitting.'};
 function whimCopy(needs,md){
-  if(needs.energy.sleeping)return 'Whim: five more minutes.';
+  if(needs.energy.sleeping)return 'Five more minutes.';
   const low=lowestNeed(needs);
   if(low&&low.v<50)return WHIMS[low.k];
-  if(md.label==='Happy')return 'Whim: more of this.';
+  if(md.label==='Happy')return 'More of this.';
   return '';
 }
 
