@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#22476E">
+<meta name="description" content="A baby tracker that reads like a life-sim game: needs bars, moodlets and one-tap logging.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Just a Baby">
+<title>Just a Baby</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="/app.css?v=202610201100">
+</head>
+<body>
+
+<!-- Loading -->
+<div class="wrap screen" id="bootScreen"><p style="color:var(--muted)">Loading…</p></div>
+
+<!-- Sign in -->
+<div class="wrap screen" id="authScreen" hidden>
+  <div class="panel">
+    <div class="pv" id="authPortrait"></div>
+    <h2>Just a Baby</h2>
+    <p>Feeds, naps and diapers as four simple needs bars. Sign in with your email, no password needed.</p>
+    <form id="emailForm" novalidate>
+      <label class="lbl" for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" required>
+      <button class="primary" type="submit" id="emailBtn">Email me a sign-in link</button>
+    </form>
+    <form id="codeForm" hidden novalidate>
+      <p id="sentTo"></p>
+      <label class="lbl" for="otp">Or type the 6-digit code from the email</label>
+      <input type="text" id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="primary" type="submit" id="codeBtn">Sign in</button>
+      <button class="linkbtn" type="button" id="changeEmail">Use a different email</button>
+    </form>
+    <div class="formerr" id="authErr" role="alert"></div>
+    <p class="disclaim">By signing in you agree to the <a href="/privacy.html">privacy notice</a>.</p>
+  </div>
+</div>
+
+<!-- Add a baby -->
+<div class="wrap screen" id="setupScreen" hidden>
+  <div class="panel">
+    <div class="pv" id="setupPortrait"></div>
+    <h2>Add your baby</h2>
+    <p>You can change the name, look and settings any time.</p>
+    <form id="setupForm" novalidate>
+      <div class="field"><label class="lbl" for="newName">Baby's name or nickname</label><input type="text" id="newName" maxlength="24" autocomplete="off" required></div>
+      <div class="field"><label class="lbl" for="newBirth">Birthday (optional)</label><input type="date" id="newBirth"></div>
+      <label class="toggle" id="importRow" hidden><input type="checkbox" id="importLocal" checked> <span id="importLbl">Bring over entries saved on this device</span></label>
+      <button class="primary" type="submit" id="setupBtn">Start tracking</button>
+    </form>
+    <div class="formerr" id="setupErr" role="alert"></div>
+    <div class="divider"></div>
+    <p style="font-size:14px">Joining a partner's baby instead? Open the invite link they sent you on this device.</p>
+    <button class="linkbtn" type="button" id="setupCancel" hidden>Back to the app</button>
+    <button class="linkbtn" type="button" id="setupSignOut">Sign out</button>
+  </div>
+</div>
+
+<!-- The app -->
+<div id="appScreen" hidden>
+<div class="wrap">
+  <header class="top">
+    <div class="who">
+      <button class="namebtn" id="nameBtn" aria-label="Switch or add a baby">
+        <h1 id="babyName">Baby</h1>
+        <div class="age" id="ageLine">No birthday yet</div>
+      </button>
+    </div>
+    <div class="daychip"><small id="clockLbl">Morning</small><b id="dayCount">Day 1</b></div>
+    <button class="iconbtn" id="milestonesBtn" aria-label="Milestones">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4"/><path d="M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4"/><path d="M9 20h6"/><path d="M10 17h4"/></svg>
+      <span class="iconcount" id="msCount" hidden>0</span>
+    </button>
+    <button class="iconbtn" id="historyBtn" aria-label="History">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></svg>
+    </button>
+    <button class="iconbtn" id="settingsBtn" aria-label="Edit baby and settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
+    </button>
+  </header>
+
+  <main class="layout">
+    <section class="card" aria-label="Your baby">
+      <div class="portrait" id="portrait">
+        <button class="baby" id="baby" aria-label="Tap the baby"></button>
+        <div class="speech off" id="speech">Goo!</div>
+        <div class="whim" id="whim" hidden></div>
+        <div class="samplepill" id="samplePill" hidden>Sample day · log something to start</div>
+      </div>
+      <div class="status">
+        <div class="tagline">
+          <p class="emotion" id="emotionLine">Emotion: Fine.</p>
+          <p class="emotionsub" id="emotionSub"></p>
+        </div>
+        <div class="moodlets" id="moodlets"></div>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="hud" aria-label="Needs">
+        <div class="needs" id="needs"></div>
+      </section>
+      <section class="mscard" id="msCard" aria-label="Milestones"></section>
+    </div>
+  </main>
+
+  <section class="today" id="today" aria-label="Today so far"></section>
+</div>
+
+<nav class="actionbar" aria-label="Log something">
+  <div class="actions" id="actions"></div>
+</nav>
+</div>
+
+<div class="sheetwrap" id="sheetWrap" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastUndo">Undo</button></div>
+<div class="unlock" id="unlock" hidden></div>
+<div class="offline" id="offlinePill" hidden>Saved on this phone. Syncing when you're back online.</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="/config.js?v=202610201100"></script>
+<script src="/milestones.js?v=202610201100"></script>
+<script src="/app.js?v=202610201100"></script>
+</body>
+</html>

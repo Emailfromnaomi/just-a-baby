@@ -894,7 +894,7 @@ function settingsHTML(){
      <p class="hint">Signed in as ${esc(user&&user.email||'')}.</p>
      <div class="chips"><button class="chip" id="signOut">Sign out</button>${myRole!=='owner'?`<button class="chip" id="leaveBaby">Stop caring for ${esc(sheet.draft.name)}</button>`:''}</div>
      <button class="danger" id="deleteAccount">Delete my account and data</button>
-     <p class="disclaim">Deleting removes your login and every baby you created, including all their entries, for everyone. It can't be undone. Download your data first if you want a copy. <a href="privacy.html">Privacy notice</a></p>`;
+     <p class="disclaim">Deleting removes your login and every baby you created, including all their entries, for everyone. It can't be undone. Download your data first if you want a copy. <a href="/privacy.html">Privacy notice</a></p>`;
   }
   return h;
 }
@@ -1114,7 +1114,9 @@ async function afterSignIn(u,force){
 function afterSignOut(){
   signedInAs=null;user=null;baby=null;babies=[];events={};milestones={};
   if(channel){sb.removeChannel(channel);channel=null}
-  showAuth();
+  // Signing in lives on its own pages now. Someone holding an invite is most
+  // likely new, so send them to sign up; everyone else goes to log in.
+  location.replace(lsGet(LS.invite,null)?'/signup/':'/login/');
 }
 
 async function boot(){

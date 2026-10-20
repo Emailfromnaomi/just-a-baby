@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#22476E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Just a Baby">
+<title>Log in · Just a Baby</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="/app.css?v=202610201100">
+<style>
+.pv img{width:100%;height:100%;object-fit:cover;display:block}
+.switch{margin:16px 0 0;text-align:center;color:var(--muted)}
+.home{display:inline-block;margin:0 0 12px;font-family:var(--display);font-weight:800;font-size:20px;color:var(--ink);text-decoration:none}
+</style>
+</head>
+<body data-mode="login">
+<div class="wrap screen">
+  <div class="panel">
+    <a class="home" href="/">Just a Baby</a>
+    <div class="pv"><img src="/images/baby.png" alt="" width="640" height="300"></div>
+    <h2 id="heading">Welcome back.</h2>
+    <p id="intro">We’ll email you a link and a 6-digit code. No password needed.</p>
+    <form id="emailForm" novalidate>
+      <label class="lbl" for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" required>
+      <button class="primary" type="submit" id="emailBtn">Send link</button>
+    </form>
+    <form id="codeForm" hidden novalidate>
+      <p id="sentTo"></p>
+      <label class="lbl" for="otp">6-digit code</label>
+      <input type="text" id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="primary" type="submit" id="codeBtn">Log in</button>
+      <button class="linkbtn" type="button" id="changeEmail">Use a different email</button>
+    </form>
+    <div class="formerr" id="authErr" role="alert"></div>
+    <p class="disclaim">By logging in you agree to the <a href="/privacy.html">privacy notice</a>.</p>
+    <p class="switch">New here? <a href="/signup/">Sign up</a></p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script src="/config.js?v=202610201100"></script>
+<script src="/auth.js?v=202610201100"></script>
+</body>
+</html>

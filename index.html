@@ -2,133 +2,350 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#22476E">
-<meta name="description" content="A baby tracker that reads like a life-sim game: needs bars, moodlets and one-tap logging.">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Just a Baby">
+<script>
+// Send anything meant for the app straight there: invite links and sign-in links
+// sent before the app moved to /yourbaby, and home-screen installs.
+(function(){var s=location.search,h=location.hash,sa=false;
+try{sa=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){}
+if(/[?&](invite|code|token_hash|error_description)=/.test(s)||/(access_token|error_description)=/.test(h)||sa){location.replace('/yourbaby/'+s+h)}})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2C4A72">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <title>Just a Baby</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="description" content="A mood and milestone baby tracker. Tap to log feeds, naps, diapers, play and baths. See what your baby needs at a glance.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
-<link rel="stylesheet" href="app.css?v=202610181240">
+<style>
+/* Layout: one centred 1200px column, full-bleed navy bands for header, marquee, punchline and footer. Single light look, matching the app. */
+:root{
+  --ground:#E6EDF2; --paper:#FFFFFF; --ink:#1B2B44; --body:#3E4F66; --muted:#56677D;
+  --navy:#2C4A72; --navy-deep:#1B2B44; --navy-tile:#3E5E89; --navy-line:#4A6A95; --navy-soft:#C9D5E3; --navy-track:#1E3556; --navy-edge:#5B7FAD;
+  --gold:#EDB955; --gold-ink:#2B1E00;
+  --ok:#6FD25C; --ok-ink:#0D2416; --warn:#EDB955; --warn-ink:#2B1E00; --bad:#FF8A8A; --bad-bar:#FF6B6B; --bad-ink:#2E0A0A;
+  --hex-empty:#F4F7FA; --hex-line:#8597AD;
+  --display:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
+  --text:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5}
+a{color:var(--navy)} a:hover{color:var(--ink)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
+h1,h2,h3{text-wrap:balance}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(32px, env(safe-area-inset-left, 0px));padding-right:max(32px, env(safe-area-inset-right, 0px))}
+.display{font-family:var(--display);font-weight:800;line-height:1;margin:0}
+
+/* Buttons: flat, no shadows */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:14px;font-family:var(--display);font-weight:800;font-size:17px;text-decoration:none;white-space:nowrap}
+.btn-gold{background:var(--gold);color:var(--gold-ink)} .btn-gold:hover{color:var(--gold-ink);filter:brightness(1.05)}
+.btn-ghost{border:2px solid var(--navy-edge);color:#fff;font-weight:700} .btn-ghost:hover{color:#fff;background:var(--navy-tile)}
+.btn-navy{background:var(--navy);color:#fff;min-height:56px;padding:0 28px;font-size:20px;border-radius:16px} .btn-navy:hover{color:#fff;background:var(--ink)}
+.btn-lg{min-height:56px;padding:0 32px;font-size:20px;border-radius:16px}
+
+/* Header */
+.top{background:var(--navy);border-bottom:3px solid var(--navy-line)}
+.top .wrap{height:76px;display:flex;align-items:center;gap:24px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;flex:1;min-width:0}
+.brand:hover{color:#fff}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--gold);display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:8px;flex:none}
+.mark i{width:5px;border-radius:3px;background:var(--gold-ink)}
+.brand span{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;white-space:nowrap}
+.navlinks{display:flex;gap:24px;font-weight:700}
+.navlinks a{color:var(--navy-soft);text-decoration:none} .navlinks a:hover{color:#fff}
+.auth{display:flex;gap:8px}
+
+/* Hero */
+.hero{padding-block:56px 64px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:20px;min-width:0}
+.hero h1{font-size:64px;letter-spacing:-0.01em}
+.hero .kicker{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.15;color:var(--navy);margin:0}
+.hero .lede{margin:0;font-size:19px;color:var(--body);max-width:30em}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:4px}
+.cta-row a:not(.btn){font-weight:700;font-size:17px}
+.small{font-size:15px;color:var(--muted)}
+
+/* App preview */
+.app{background:var(--paper);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.room{position:relative;height:300px}
+.room img{width:100%;height:100%;object-fit:cover;display:block}
+.bubble{position:absolute;left:20px;top:20px;background:var(--paper);border-radius:16px;padding:8px 14px;font-size:15px;font-weight:700;max-width:200px;line-height:1.25}
+.moods{position:absolute;left:20px;bottom:16px;display:flex;flex-wrap:wrap;gap:6px}
+.mood{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700}
+.mood i{width:9px;height:9px;border-radius:50%}
+.emotion{padding:14px 20px 4px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.emotion b{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1}
+.needs{margin:12px;background:var(--navy);border-radius:22px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;color:#fff}
+.need{display:flex;flex-direction:column;gap:8px;min-width:0}
+.need-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.need-head b{font-family:var(--display);font-size:20px;line-height:1}
+.need-head span{font-size:13px;color:var(--navy-soft);font-variant-numeric:tabular-nums}
+.bar{height:14px;border-radius:999px;background:var(--navy-track);padding:2px}
+.bar i{display:block;height:100%;border-radius:999px}
+.status{align-self:flex-start;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}
+.s-bad{background:var(--bad);color:var(--bad-ink)} .s-ok{background:var(--ok);color:var(--ok-ink)} .s-warn{background:var(--warn);color:var(--warn-ink)}
+.app-foot{padding:0 20px 16px;font-size:13px;color:var(--muted)}
+
+/* Marquee */
+.mq{background:var(--navy);border-block:3px solid var(--navy-line);padding-block:16px;overflow:hidden}
+.mq-track{display:flex;width:max-content;animation:mq 40s linear infinite}
+.mq:hover .mq-track{animation-play-state:paused}
+.mq-group{display:flex;gap:12px;padding-right:12px;margin:0;list-style:none;padding-left:0}
+.chip{display:inline-flex;align-items:center;gap:12px;background:var(--navy-tile);border-radius:18px;padding:10px 20px 10px 10px;color:#fff;font-family:var(--display);font-weight:700;font-size:19px;white-space:nowrap}
+.chip span{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+@keyframes mq{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.mq-track{animation:none}}
+
+/* Features */
+.features{background:var(--paper);padding-block:64px}
+.features .wrap{display:flex;flex-direction:column;gap:32px}
+.section-head{display:flex;flex-direction:column;gap:8px;max-width:40em}
+.section-head h2{font-size:48px}
+.section-head p{margin:0;font-size:19px;color:var(--body)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:var(--ground);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card .label{font-weight:700;font-size:15px;color:var(--navy)}
+.card h3{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.05;margin:0}
+.card p{margin:0;font-size:17px;color:var(--body)}
+.card-foot{margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.badges{margin-top:auto;padding-top:8px;display:flex;gap:12px;align-items:flex-start}
+.badge{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700}
+
+/* Punchline */
+.punch{background:var(--navy);color:#fff;padding-block:56px}
+.punch .wrap{display:flex;flex-direction:column;gap:8px}
+.punch p{margin:0;font-family:var(--display);line-height:1.1}
+.punch .a{font-weight:700;font-size:32px;color:var(--navy-soft)}
+.punch .b{font-weight:800;font-size:44px}
+
+/* Status report */
+.report{padding-block:64px}
+.report .wrap{display:flex;flex-direction:column;gap:24px}
+.report h2{font-size:40px}
+.rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.row{background:var(--paper);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.row span{font-size:18px;line-height:1.4;color:var(--body)}
+.row b{font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+
+/* Final CTA */
+.final{padding-block:0 64px}
+.final-box{background:var(--paper);border:3px solid var(--navy);border-radius:28px;padding:40px;display:flex;flex-wrap:wrap;align-items:center;gap:24px}
+.final-copy{flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.final-copy h2{font-size:40px;line-height:1.05}
+.final-copy p{margin:0;font-size:18px;color:var(--body)}
+.final-act{flex:1 1 220px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+
+/* Footer */
+.foot{background:var(--navy-deep);color:var(--navy-soft);padding-block:32px;font-size:14px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center}
+.foot p{flex:999 1 320px;min-width:0;margin:0}
+.foot nav{display:flex;gap:20px}
+.foot a{color:#fff}
+
+@media (max-width:900px){
+  .hero .wrap,.three,.rows{grid-template-columns:minmax(0,1fr)}
+  .navlinks{display:none}
+  .hero h1{font-size:44px}
+  .hero .kicker{font-size:24px}
+  .section-head h2{font-size:38px}
+  .punch .a{font-size:24px} .punch .b{font-size:32px}
+  .final-box{padding:28px}
+}
+@media (max-width:600px){
+  .wrap{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+  .top .wrap{gap:12px}
+  .brand span{font-size:22px}
+  .auth .btn{padding:0 14px;font-size:16px}
+  .hero{padding-block:40px 48px}
+  .hero h1{font-size:40px}
+  .room{height:240px}
+  .needs{gap:16px;padding:16px}
+}
+@media (max-width:380px){ .brand span{display:none} }
+</style>
+
+<style>body{margin:0}img{max-width:100%}</style>
 </head>
 <body>
-
-<!-- Loading -->
-<div class="wrap screen" id="bootScreen"><p style="color:var(--muted)">Loading…</p></div>
-
-<!-- Sign in -->
-<div class="wrap screen" id="authScreen" hidden>
-  <div class="panel">
-    <div class="pv" id="authPortrait"></div>
-    <h2>Just a Baby</h2>
-    <p>Feeds, naps and diapers as four simple needs bars. Sign in with your email, no password needed.</p>
-    <form id="emailForm" novalidate>
-      <label class="lbl" for="email">Email</label>
-      <input type="email" id="email" autocomplete="email" inputmode="email" required>
-      <button class="primary" type="submit" id="emailBtn">Email me a sign-in link</button>
-    </form>
-    <form id="codeForm" hidden novalidate>
-      <p id="sentTo"></p>
-      <label class="lbl" for="otp">Or type the 6-digit code from the email</label>
-      <input type="text" id="otp" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
-      <button class="primary" type="submit" id="codeBtn">Sign in</button>
-      <button class="linkbtn" type="button" id="changeEmail">Use a different email</button>
-    </form>
-    <div class="formerr" id="authErr" role="alert"></div>
-    <p class="disclaim">By signing in you agree to the <a href="privacy.html">privacy notice</a>.</p>
-  </div>
-</div>
-
-<!-- Add a baby -->
-<div class="wrap screen" id="setupScreen" hidden>
-  <div class="panel">
-    <div class="pv" id="setupPortrait"></div>
-    <h2>Add your baby</h2>
-    <p>You can change the name, look and settings any time.</p>
-    <form id="setupForm" novalidate>
-      <div class="field"><label class="lbl" for="newName">Baby's name or nickname</label><input type="text" id="newName" maxlength="24" autocomplete="off" required></div>
-      <div class="field"><label class="lbl" for="newBirth">Birthday (optional)</label><input type="date" id="newBirth"></div>
-      <label class="toggle" id="importRow" hidden><input type="checkbox" id="importLocal" checked> <span id="importLbl">Bring over entries saved on this device</span></label>
-      <button class="primary" type="submit" id="setupBtn">Start tracking</button>
-    </form>
-    <div class="formerr" id="setupErr" role="alert"></div>
-    <div class="divider"></div>
-    <p style="font-size:14px">Joining a partner's baby instead? Open the invite link they sent you on this device.</p>
-    <button class="linkbtn" type="button" id="setupCancel" hidden>Back to the app</button>
-    <button class="linkbtn" type="button" id="setupSignOut">Sign out</button>
-  </div>
-</div>
-
-<!-- The app -->
-<div id="appScreen" hidden>
-<div class="wrap">
-  <header class="top">
-    <div class="who">
-      <button class="namebtn" id="nameBtn" aria-label="Switch or add a baby">
-        <h1 id="babyName">Baby</h1>
-        <div class="age" id="ageLine">No birthday yet</div>
-      </button>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Just a Baby home">
+      <span class="mark" aria-hidden="true"><i style="height:10px"></i><i style="height:18px"></i><i style="height:14px"></i></span>
+      <span>Just a Baby</span>
+    </a>
+    <nav class="navlinks" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#milestones">Milestones</a>
+    </nav>
+    <div class="auth">
+      <a class="btn btn-ghost" href="/login/">Log in</a>
+      <a class="btn btn-gold" href="/signup/">Sign up</a>
     </div>
-    <div class="daychip"><small id="clockLbl">Morning</small><b id="dayCount">Day 1</b></div>
-    <button class="iconbtn" id="milestonesBtn" aria-label="Milestones">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4"/><path d="M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4"/><path d="M9 20h6"/><path d="M10 17h4"/></svg>
-      <span class="iconcount" id="msCount" hidden>0</span>
-    </button>
-    <button class="iconbtn" id="historyBtn" aria-label="History">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4"/><path d="M12 7.5V12l3 2"/></svg>
-    </button>
-    <button class="iconbtn" id="settingsBtn" aria-label="Edit baby and settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>
-    </button>
-  </header>
+  </div>
+</header>
 
-  <main class="layout">
-    <section class="card" aria-label="Your baby">
-      <div class="portrait" id="portrait">
-        <button class="baby" id="baby" aria-label="Tap the baby"></button>
-        <div class="speech off" id="speech">Goo!</div>
-        <div class="whim" id="whim" hidden></div>
-        <div class="samplepill" id="samplePill" hidden>Sample day · log something to start</div>
-      </div>
-      <div class="status">
-        <div class="tagline">
-          <p class="emotion" id="emotionLine">Emotion: Fine.</p>
-          <p class="emotionsub" id="emotionSub"></p>
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1 class="display">You're at the mercy of moods and milestones.</h1>
+        <p class="kicker">This app won't add to either.</p>
+        <p class="lede">Tap to log feeds, naps, diapers, play and baths. See what your baby needs at a glance.</p>
+        <div class="cta-row">
+          <a class="btn btn-navy" href="/signup/">Sign up</a>
+          <a href="#how">How it works</a>
         </div>
-        <div class="moodlets" id="moodlets"></div>
+        <span class="small">Set-up takes a minute. Naming the baby takes longer.</span>
       </div>
-    </section>
 
-    <div class="side">
-      <section class="hud" aria-label="Needs">
-        <div class="needs" id="needs"></div>
-      </section>
-      <section class="mscard" id="msCard" aria-label="Milestones"></section>
+      <figure class="app" style="margin:0" aria-label="Preview of the Just a Baby app">
+        <div class="room">
+          <img src="/images/baby.png" alt="A cartoon baby in her room in the Just a Baby app" width="640" height="300">
+          <div class="bubble">Be held. Standing. Not sitting.</div>
+          <div class="moods">
+            <span class="mood"><i style="background:var(--bad-bar)"></i>Getting Hungry</span>
+            <span class="mood"><i style="background:var(--ok)"></i>Well Rested</span>
+          </div>
+        </div>
+        <div class="emotion">
+          <b>Emotion: Fine. Suspiciously fine.</b>
+          <span class="small" style="font-size:14px">Norah · 3 months</span>
+        </div>
+        <div class="needs">
+          <div class="need">
+            <div class="need-head"><b>Hunger</b><span>5h 10m</span></div>
+            <div class="bar"><i style="width:12%;background:var(--bad-bar)"></i></div>
+            <span class="status s-bad">Check baby</span>
+          </div>
+          <div class="need">
+            <div class="need-head"><b>Energy</b><span>up 45m</span></div>
+            <div class="bar"><i style="width:82%;background:var(--ok)"></i></div>
+            <span class="status s-ok">All good</span>
+          </div>
+          <div class="need">
+            <div class="need-head"><b>Hygiene</b><span>2h 50m</span></div>
+            <div class="bar"><i style="width:45%;background:var(--warn)"></i></div>
+            <span class="status s-warn">Coming up</span>
+          </div>
+          <div class="need">
+            <div class="need-head"><b>Social</b><span>40m</span></div>
+            <div class="bar"><i style="width:70%;background:var(--ok)"></i></div>
+            <span class="status s-ok">All good</span>
+          </div>
+        </div>
+        <figcaption class="app-foot">Bars show time since your last log.</figcaption>
+      </figure>
     </div>
-  </main>
+  </section>
 
-  <section class="today" id="today" aria-label="Today so far"></section>
-</div>
+  <section class="mq" aria-label="Quick log actions">
+    <div class="mq-track">
+      <ul class="mq-group">
+        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M10.5 2v3l-2 2.5V20a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7.5l-2-2.5V2M8.5 12h7"/></svg></span>Log feed</li>
+        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>Start nap</li>
+        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18v2a9 9 0 0 1-18 0zM8 14q4 3 8 0"/></svg></span>Log diaper</li>
+        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M3 12h18M12 3a14 14 0 0 1 0 18"/></svg></span>Log play</li>
+        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6zM6 12V6a2 2 0 0 1 4 0"/></svg></span>Log bath</li>
+      </ul>
+    </div>
+  </section>
 
-<nav class="actionbar" aria-label="Log something">
-  <div class="actions" id="actions"></div>
-</nav>
-</div>
+  <section class="features" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display">It's just a baby.</h2>
+        <p>Inspired by the simple online games of the early 2000s, back before the internet got complicated. A few bars, a few little moods and permission to relax.</p>
+      </div>
+      <div class="three">
+        <article class="card">
+          <span class="label">Needs and little moods</span>
+          <h3>Let your baby be a baby.</h3>
+          <p>Hunger, Energy, Hygiene and Social in one view. Each log adds a little mood, like Well Fed or Fresh Diaper.</p>
+          <div class="card-foot">
+            <span class="tag">Well Fed (3h)</span><span class="tag">Fresh Diaper</span><span class="tag">Overstimulated</span>
+          </div>
+        </article>
+        <article class="card" id="milestones">
+          <span class="label">Milestones</span>
+          <h3>Save the dates of important milestones.</h3>
+          <p>First Coo. First Full Night. Log it with a tap. We'll handle the confetti.</p>
+          <div class="badges">
+            <div class="badge">
+              <svg role="img" aria-label="First Coo, logged" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#EDB955"/><g transform="translate(14 17)" fill="none" stroke="#2B1E00" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 9v6M16 6v12M20 10v4"/></g></svg>
+              Oct 12
+            </div>
+            <svg role="img" aria-label="Not logged yet" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg>
+            <svg role="img" aria-label="Not logged yet" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg>
+          </div>
+        </article>
+        <article class="card">
+          <span class="label">At a glance</span>
+          <h3>You're doing great. Don't stress over wake windows.</h3>
+          <p>Bars show time since your last log. No schedules to hit. No catching up required.</p>
+          <div class="card-foot">
+            <span class="tag">9:50am Nap</span><span class="tag">11:18am Story time</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
 
-<div class="sheetwrap" id="sheetWrap" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
-<div class="toast" id="toast" hidden><span id="toastMsg"></span><button id="toastUndo">Undo</button></div>
-<div class="unlock" id="unlock" hidden></div>
-<div class="offline" id="offlinePill" hidden>Saved on this phone. Syncing when you're back online.</div>
+  <section class="punch" aria-label="What we track">
+    <div class="wrap">
+      <p class="a">Other baby apps track 40 things.</p>
+      <p class="b">We track the 4 that matter. The rest is just a baby.</p>
+    </div>
+  </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script src="config.js?v=202610181240"></script>
-<script src="milestones.js?v=202610181240"></script>
-<script src="app.js?v=202610181240"></script>
+  <section class="report">
+    <div class="wrap">
+      <h2 class="display">Today's log, explained.</h2>
+      <div class="rows">
+        <div class="row"><span>Ate. Then ate again 40m later.</span><b>They're just a baby.</b></div>
+        <div class="row"><span>Refused the nap. Bold strategy.</span><b>It's just a baby.</b></div>
+        <div class="row"><span>Cried at the dog. Again.</span><b>"I'm just a baby."</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" id="signup">
+    <div class="wrap">
+      <div class="final-box">
+        <div class="final-copy">
+          <h2 class="display">Your baby has needs. Now they have bars.</h2>
+          <p>The bars will be here whenever you are.</p>
+        </div>
+        <div class="final-act" id="login">
+          <a class="btn btn-gold btn-lg" href="/signup/">Sign up</a>
+          <span class="small">Already have a household? <a href="/login/" style="font-weight:700">Log in</a></span>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Just a Baby is a tracker, not medical advice.</p>
+    <nav aria-label="Footer"><a href="/privacy.html">Privacy</a></nav>
+    <span>© 2026 Just a Baby</span>
+  </div>
+</footer>
+
+<script>
+// Fill the marquee: repeat the chip set so one half spans wide screens, then clone it for a seamless loop.
+(function(){
+  var track=document.querySelector('.mq-track'); if(!track) return;
+  var group=track.querySelector('.mq-group'); var chips=Array.prototype.slice.call(group.children);
+  for(var r=0;r<2;r++){chips.forEach(function(c){var n=c.cloneNode(true);n.setAttribute('aria-hidden','true');group.appendChild(n);});}
+  var copy=group.cloneNode(true); copy.setAttribute('aria-hidden','true'); track.appendChild(copy);
+})();
+</script>
+
 </body>
 </html>

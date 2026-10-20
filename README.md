@@ -2,6 +2,15 @@
 
 Live at **[justababy.ca](https://justababy.ca)**.
 
+| URL | What it is | File |
+|---|---|---|
+| `/` | Marketing homepage | `index.html` |
+| `/signup` | Create an account (email link or 6-digit code) | `signup/index.html` |
+| `/login` | Sign in to an existing account; never creates one | `login/index.html` |
+| `/yourbaby` | The app: the baby, the needs bars and logging | `yourbaby/index.html` |
+
+`/signup` and `/login` share `auth.js`. The app (`app.js`, `app.css`, `config.js`, `milestones.js`) stays at the repo root and is loaded by `/yourbaby` with site-root paths. The homepage forwards invite links, old sign-in links and home-screen launches to `/yourbaby`.
+
 A baby tracker that reads like a life-sim game. Instead of charts and forms, you get four needs bars, a mood, a few moodlets, and five big buttons you can hit at 3am.
 
 <p>
