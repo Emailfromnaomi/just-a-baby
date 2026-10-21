@@ -675,7 +675,7 @@ function milestonesHTML(){
   BANDS.forEach((b,i)=>{
     const list=MS.filter(m=>bandOf(m)===i), n=list.filter(m=>milestones[m.key]).length;
     h+=`<h4 class="msband">${b[0]}<span>${n} of ${list.length}</span></h4><div class="msgrid">${list.map(m=>{const g=milestones[m.key];
-      return `<button class="badge${g?' got':''}" data-ms="${m.key}" aria-label="${esc(m.name)}${g?', unlocked '+fmtDay(g.on):', locked'}">${badgeSVG(m,!!g,62)}<b>${esc(m.name)}</b><span>${g?fmtDay(g.on):winText(m)}</span></button>`}).join('')}</div>`;
+      return `<button class="badge${g?' got':''}" data-ms="${m.key}" aria-label="${esc(m.name)}${g?', unlocked '+fmtDay(g.on):', locked'}">${badgeSVG(m,!!g,62)}<b>${esc(m.name)}</b>${g?`<span>${fmtDay(g.on)}</span>`:''}</button>`}).join('')}</div>`;
   });
   return h;
 }
