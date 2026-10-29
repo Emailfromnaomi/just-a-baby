@@ -156,10 +156,28 @@ svg.i{width:22px;height:22px;flex:none}
 .final-act a:not(.btn){color:#fff;font-weight:700}
 
 /* footer */
-.foot{background:var(--navy-deep);color:var(--navy-soft);padding-block:28px;font-size:14.5px}
-.foot .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
-.foot p{margin-right:auto}
+.foot{background:var(--navy-deep);color:var(--navy-soft);font-size:14.5px}
+.foot .legal{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;padding-block:28px}
+.foot .legal p{margin-right:auto}
 .foot a{color:#fff}
+
+/* newsletter signup (posts straight to Customer.io's form endpoint) */
+.news{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);gap:20px 48px;align-items:center;padding-block:40px 36px;border-bottom:1px solid rgba(255,255,255,.12)}
+.news h2{font-size:clamp(28px,3vw,36px);color:#fff}
+.news h2 span{color:var(--gold)}
+.news .pitch{color:var(--navy-soft);font-size:17px;margin-top:8px;max-width:32em}
+.news form{display:flex;flex-direction:column;gap:8px}
+.news label{font-weight:700;color:#fff;font-size:15px}
+.news .row{display:flex;gap:10px}
+.news input[type=email]{flex:1;min-width:0;min-height:52px;border-radius:14px;border:2px solid var(--navy-edge);background:var(--navy-track);color:#fff;font:inherit;font-size:17px;padding:0 16px}
+.news input[type=email]::placeholder{color:#9DB0C7}
+.news input[type=email]:focus{border-color:var(--gold);outline:none}
+.news .btn{min-height:52px}
+.news .fine{font-size:13.5px;color:var(--navy-soft)}
+.news .done{display:none;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;color:#fff}
+.news .done small{display:block;font-family:var(--text);font-weight:400;font-size:15px;color:var(--navy-soft);margin-top:6px}
+.news.is-done form{display:none}
+.news.is-done .done{display:block}
 
 @media (max-width:940px){
   .hero .wrap,.versus .wrap{grid-template-columns:minmax(0,1fr)}
@@ -168,6 +186,7 @@ svg.i{width:22px;height:22px;flex:none}
   .forty{columns:3}
 }
 @media (max-width:760px){
+  .news{grid-template-columns:minmax(0,1fr)}
   .pair .wrap{grid-template-columns:minmax(0,1fr);gap:36px}
   .pair article{padding:0}
   .pair article + article{padding:32px 0 0;border-left:0;border-top:2px solid var(--rule)}
@@ -205,6 +224,8 @@ svg.i{width:22px;height:22px;flex:none}
   .entries .what{grid-column:2;font-size:17px}
   .entries .verdict{grid-column:2;text-align:left;font-size:22px}
   .final{padding-block:36px}
+  .news{padding-block:32px 28px}
+  .news .row{flex-direction:column}
 }
 @media (max-width:380px){ .brand b{display:none} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -380,10 +401,36 @@ svg.i{width:22px;height:22px;flex:none}
 
 <footer class="foot">
   <div class="wrap">
-    <p>Just a Baby is a tracker, not medical advice.</p>
-    <a href="/privacy.html">Privacy</a>
-    <span>© 2026 Just a Baby</span>
+    <section class="news" id="newsletter" aria-labelledby="newsh">
+      <div>
+        <h2 id="newsh">The Parent Bar. <span>For you.</span></h2>
+        <p class="pitch">Every need has a bar except yours. Every 2 weeks: a parent story, a baby thing that's been good since the '90s, and one thing just for you.</p>
+      </div>
+      <div>
+        <!-- Customer.io connected form: a plain POST to their form endpoint, then back here. No tracking script. -->
+        <form method="POST" action="https://customerioforms.com/forms/submit_action?site_id=0629f392f74bc40fadf6&amp;form_id=jab_newsletter_footer&amp;success_url=https%3A%2F%2Fjustababy.ca%2F%3Fnewsletter%3Djoined%23newsletter">
+          <label for="news-email">Email</label>
+          <div class="row">
+            <input id="news-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required>
+            <button class="btn btn-gold" type="submit">Subscribe</button>
+          </div>
+          <input type="hidden" name="newsletter_opt_in" value="true">
+          <input type="hidden" name="newsletter_source" value="website_footer">
+          <p class="fine">Unsubscribe anytime. Some issues have a sponsor. We'll always label it.</p>
+        </form>
+        <p class="done" role="status">You're on the list.<small>First issue is on its way. Check your inbox.</small></p>
+      </div>
+    </section>
+    <div class="legal">
+      <p>Just a Baby is a tracker, not medical advice.</p>
+      <a href="/privacy.html">Privacy</a>
+      <span>© 2026 Just a Baby</span>
+    </div>
   </div>
 </footer>
+<script>
+// Back from Customer.io's form endpoint: swap the form for a thank-you, then tidy the URL.
+(function(){if(new URLSearchParams(location.search).get('newsletter')==='joined'){var n=document.getElementById('newsletter');if(n)n.classList.add('is-done');history.replaceState(null,'',location.pathname+'#newsletter')}})();
+</script>
 </body>
 </html>
