@@ -75,7 +75,7 @@ end $$;
 create or replace function public.cio_profile(p_user uuid)
 returns jsonb language sql stable security definer set search_path = public as $$
   with u as (
-    select id, email, created_at, email_confirmed_at, last_sign_in_at from auth.users where id = p_user
+    select id, email, created_at, email_confirmed_at, last_sign_in_at, raw_user_meta_data from auth.users where id = p_user
   ), m as (
     select bm.baby_id, bm.role, b.name, b.birth, b.settings
     from public.baby_members bm join public.babies b on b.id = bm.baby_id
@@ -104,6 +104,10 @@ returns jsonb language sql stable security definer set search_path = public as $
     'latest_milestone_key',  (select key from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
     'latest_milestone_name', (select name from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
     'latest_milestone_at',   (select extract(epoch from (achieved_on + time '12:00') at time zone 'UTC')::bigint from public.milestones where baby_id = (select baby_id from m) order by achieved_on desc, created_at desc limit 1),
+    -- Ticked "Also send me Saving Sanity" on /signup. Only ever sent as true (nulls are stripped),
+    -- so it never overwrites an opt-in that came from the website footer form.
+    'newsletter_opt_in',  case when (select raw_user_meta_data->>'newsletter_opt_in' from u) = 'true' then true end,
+    'newsletter_source',  case when (select raw_user_meta_data->>'newsletter_opt_in' from u) = 'true' then 'app_signup' end,
     'app',                'just-a-baby'
   )) end;
 $$;

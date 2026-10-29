@@ -53,7 +53,11 @@ $('#emailForm').addEventListener('submit',async e=>{
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter your email address, like name@example.com.');return}
   const btn=$('#emailBtn');btn.disabled=true;$('#authErr').textContent='';
   const redirect=location.origin+APP+(invite?'?invite='+encodeURIComponent(invite):'');
-  const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:redirect,shouldCreateUser:MODE==='signup'}});
+  const options={emailRedirectTo:redirect,shouldCreateUser:MODE==='signup'};
+  // Newsletter opt-in (sign-up page only). Saved on the new account; cio_profile() sends it to Customer.io.
+  const optin=$('#newsletter');
+  if(MODE==='signup'&&optin&&optin.checked)options.data={newsletter_opt_in:true};
+  const {error}=await sb.auth.signInWithOtp({email,options});
   btn.disabled=false;
   if(error){showErr(friendly(error));return}
   pendingEmail=email;
