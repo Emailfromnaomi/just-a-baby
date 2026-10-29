@@ -31,6 +31,7 @@ const IC={
  trophy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4"/><path d="M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4"/><path d="M9 20h6"/><path d="M10 17h4"/></svg>',
  tub:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2"/><circle cx="13" cy="8" r="1"/><circle cx="16" cy="6" r="1.3"/></svg>'
 };
+const MI={'+':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>','!':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 4.5v10"/><circle cx="12" cy="19.5" r=".6" fill="currentColor"/></svg>',z:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h12L6 18h12"/></svg>'};
 const TYPE_ICON={feed:'bottle',sleep:'moon',diaper:'diaper',play:'rattle',bath:'tub'};
 const SUBS={
  feed:{bottle:'Bottle',left:'Left side',right:'Right side',solids:'Solids'},
@@ -78,7 +79,7 @@ function dayKey(t){const d=new Date(t);return d.getFullYear()+'-'+String(d.getMo
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function dur(ms){ms=Math.max(0,ms);const m=Math.round(ms/MIN);if(m<1)return 'under a minute';if(m<60)return m+'m';const h=Math.floor(m/60),r=m%60;return r?h+'h '+r+'m':h+'h'}
 function ago(t){const ms=Date.now()-t;return ms<MIN?'just now':dur(ms)+' ago'}
-function clock(t){return new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})}
+function clock(t){return new Date(t).toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'}).replace(/\s?([AP])M$/i,(m,x)=>x.toLowerCase()+'m')}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,9)}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtAmt(ml){if(ml==null)return '';return profile.unit==='oz'?(Math.round(ml/29.5735*2)/2)+' oz':Math.round(ml)+' ml'}
@@ -436,7 +437,7 @@ function render(){
   $('#today').innerHTML=todayHTML();
   const fk=JSON.stringify(profile.look)+md.face;
   if(fk!==lastFaceKey){$('#baby').innerHTML=avatarSVG(profile.look,md.face);lastFaceKey=fk;}
-  $('#moodlets').innerHTML=moodlets(needs).map(m=>`<div class="moodlet ${m[0]}"><div class="mi">${m[1]}</div>${m[2]}</div>`).join('');
+  $('#moodlets').innerHTML=moodlets(needs).map(m=>`<div class="moodlet ${m[0]}"><div class="mi">${MI[m[1]]||m[1]}</div>${m[2]}</div>`).join('');
   const defs=[['hunger','Hunger','bottle'],['energy','Energy',needs.energy.sleeping?'moon':'sun'],['hygiene','Hygiene','drop'],['social','Social','heart']];
   $('#needs').innerHTML=defs.map(([k,l,ic])=>{const n=needs[k],v=n.v;return `<div class="need"><div class="row"><div class="ic">${IC[ic]}</div><div class="nm">${l}</div></div>
     <div class="bar${v==null?' empty':''}" role="meter" aria-label="${l}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v==null?0:Math.round(v)}"><i style="width:${v==null?100:Math.max(6,v)}%;--c:${v==null?'transparent':colorFor(v)}"></i></div>
@@ -807,7 +808,7 @@ function drawSheet(){
   } else if(k==='play'){
     h=`<h3>${IC.rattle}Play and connect</h3><p class="hint">Tap one to log it. Social only drains while they're awake.</p>${whenChips()}<span class="lbl">What did you do</span><div class="chips">${Object.entries(SUBS.play).map(([v,l])=>`<button class="chip big" data-quick="${v}">${l}</button>`).join('')}</div>`;
   } else if(k==='bath'){
-    h=`<h3>${IC.tub}Bath time</h3><p class="hint">Adds the Squeaky Clean moodlet.</p>${whenChips()}<button class="primary" id="doLog">Log bath</button>`;
+    h=`<h3>${IC.tub}Bath time</h3><p class="hint">Adds the Squeaky Clean little mood.</p>${whenChips()}<button class="primary" id="doLog">Log bath</button>`;
   } else if(k==='settings'){ h=settingsHTML(); }
   else if(k==='history'){ h=historyHTML(); }
   else if(k==='babies'){ h=babiesHTML(); }

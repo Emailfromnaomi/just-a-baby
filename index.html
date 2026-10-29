@@ -20,172 +20,219 @@ if(/[?&](invite|code|token_hash|error_description)=/.test(s)||/(access_token|err
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
-/* Layout: one centred 1200px column, full-bleed navy bands for header, marquee, punchline and footer. Single light look, matching the app. */
+/* One light look, matching the app: navy HUD panels with thick rounded frames, gold for the one thing to press. Flat buttons, no shadows. */
 :root{
-  --ground:#E6EDF2; --paper:#FFFFFF; --ink:#1B2B44; --body:#3E4F66; --muted:#56677D;
-  --navy:#2C4A72; --navy-deep:#1B2B44; --navy-tile:#3E5E89; --navy-line:#4A6A95; --navy-soft:#C9D5E3; --navy-track:#1E3556; --navy-edge:#5B7FAD;
+  --ground:#E4ECF2; --paper:#FFFFFF; --ink:#1B2B44; --body:#3B4C63; --muted:#53647A; --rule:#CCD8E3;
+  --navy:#2C4A72; --navy-deep:#1B2B44; --navy-tile:#3A5A85; --navy-soft:#C9D5E3; --navy-track:#1A304F; --navy-edge:#5B7FAD;
   --gold:#EDB955; --gold-ink:#2B1E00;
   --ok:#6FD25C; --ok-ink:#0D2416; --warn:#EDB955; --warn-ink:#2B1E00; --bad:#FF8A8A; --bad-bar:#FF6B6B; --bad-ink:#2E0A0A;
-  --hex-empty:#F4F7FA; --hex-line:#8597AD;
-  --display:'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
-  --text:'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color-scheme: light;
+  --display:'Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --text:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:light;
 }
 *{box-sizing:border-box}
-body{background:var(--ground);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.5}
-a{color:var(--navy)} a:hover{color:var(--ink)}
-:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:6px}
-h1,h2,h3{text-wrap:balance}
-.wrap{max-width:1200px;margin:0 auto;padding-left:max(32px, env(safe-area-inset-left, 0px));padding-right:max(32px, env(safe-area-inset-right, 0px))}
-.display{font-family:var(--display);font-weight:800;line-height:1;margin:0}
+html{background:var(--navy-deep)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::selection{background:var(--gold);color:var(--gold-ink)}
+img{max-width:100%;display:block}
+a{color:var(--navy);text-underline-offset:3px;text-decoration-thickness:2px}
+a:hover{color:var(--ink)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px;border-radius:8px}
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.02;margin:0;text-wrap:balance;letter-spacing:-0.01em}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:max(28px,env(safe-area-inset-left,0px))}
+svg.i{width:22px;height:22px;flex:none}
 
-/* Buttons: flat, no shadows */
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border-radius:14px;font-family:var(--display);font-weight:800;font-size:17px;text-decoration:none;white-space:nowrap}
-.btn-gold{background:var(--gold);color:var(--gold-ink)} .btn-gold:hover{color:var(--gold-ink);filter:brightness(1.05)}
-.btn-ghost{border:2px solid var(--navy-edge);color:#fff;font-weight:700} .btn-ghost:hover{color:#fff;background:var(--navy-tile)}
-.btn-navy{background:var(--navy);color:#fff;min-height:56px;padding:0 28px;font-size:20px;border-radius:16px} .btn-navy:hover{color:#fff;background:var(--ink)}
-.btn-lg{min-height:56px;padding:0 32px;font-size:20px;border-radius:16px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:14px;font-family:var(--display);font-weight:800;font-size:18px;text-decoration:none;white-space:nowrap;border:0;transition:background-color .15s,transform .1s}
+.btn:active{transform:translateY(1px)}
+.btn-gold{background:var(--gold);color:var(--gold-ink)}
+.btn-gold:hover{background:#F3C76B;color:var(--gold-ink)}
+.btn-big{min-height:58px;padding:0 30px;font-size:21px;border-radius:16px}
+.btn-line{color:#fff;font-weight:700;box-shadow:inset 0 0 0 2px var(--navy-edge)}
+.btn-line:hover{color:#fff;background:var(--navy-tile)}
 
-/* Header */
-.top{background:var(--navy);border-bottom:3px solid var(--navy-line)}
-.top .wrap{height:76px;display:flex;align-items:center;gap:24px}
-.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;flex:1;min-width:0}
+/* header */
+.top{background:var(--navy);border-bottom:3px solid var(--navy-edge)}
+.top .wrap{height:72px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;margin-right:auto}
 .brand:hover{color:#fff}
-.mark{width:36px;height:36px;border-radius:10px;background:var(--gold);display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:8px;flex:none}
+.mark{width:36px;height:36px;border-radius:11px;background:var(--gold);display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:8px;flex:none}
 .mark i{width:5px;border-radius:3px;background:var(--gold-ink)}
-.brand span{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;white-space:nowrap}
-.navlinks{display:flex;gap:24px;font-weight:700}
-.navlinks a{color:var(--navy-soft);text-decoration:none} .navlinks a:hover{color:#fff}
-.auth{display:flex;gap:8px}
+.brand b{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;white-space:nowrap}
 
-/* Hero */
-.hero{padding-block:56px 64px}
-.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:center}
-.hero-copy{display:flex;flex-direction:column;gap:20px;min-width:0}
-.hero h1{font-size:64px;letter-spacing:-0.01em}
-.hero .kicker{font-family:var(--display);font-weight:700;font-size:28px;line-height:1.15;color:var(--navy);margin:0}
-.hero .lede{margin:0;font-size:19px;color:var(--body);max-width:30em}
-.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:4px}
-.cta-row a:not(.btn){font-weight:700;font-size:17px}
-.small{font-size:15px;color:var(--muted)}
+/* hero */
+.hero{padding-block:44px 52px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);gap:44px;align-items:center}
+.hero-copy{display:flex;flex-direction:column;gap:18px}
+.hero h1{font-size:clamp(42px,5.4vw,66px)}
+.hero .then{font-family:var(--display);font-weight:700;font-size:clamp(24px,2.4vw,30px);line-height:1.1;color:var(--navy)}
+.hero .lede{font-size:19px;color:var(--body);max-width:30em}
+.cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:6px}
+.aside{font-size:15px;color:var(--muted)}
 
-/* App preview */
-.app{background:var(--paper);border-radius:28px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
-.room{position:relative;height:300px}
-.room img{width:100%;height:100%;object-fit:cover;display:block}
-.bubble{position:absolute;left:20px;top:20px;background:var(--paper);border-radius:16px;padding:8px 14px;font-size:15px;font-weight:700;max-width:200px;line-height:1.25}
-.moods{position:absolute;left:20px;bottom:16px;display:flex;flex-wrap:wrap;gap:6px}
-.mood{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700}
-.mood i{width:9px;height:9px;border-radius:50%}
-.emotion{padding:14px 20px 4px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.emotion b{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.1}
-.needs{margin:12px;background:var(--navy);border-radius:22px;padding:20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px;color:#fff}
-.need{display:flex;flex-direction:column;gap:8px;min-width:0}
-.need-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.need-head b{font-family:var(--display);font-size:20px;line-height:1}
-.need-head span{font-size:13px;color:var(--navy-soft);font-variant-numeric:tabular-nums}
+/* the rig: the app's own control panel */
+.rig{margin:0;background:var(--navy);border:3px solid var(--navy-edge);border-radius:30px;padding:10px;color:#fff}
+.room{position:relative;border-radius:21px;overflow:hidden;aspect-ratio:980/470;background:#E9BE97}
+.room img{width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.bubble{position:absolute;left:14px;top:14px;background:#fff;color:var(--ink);border-radius:16px;padding:8px 14px 7px;font-size:15px;font-weight:700;line-height:1.25;max-width:13em}
+.bubble::after{content:"";position:absolute;right:26px;bottom:-9px;border:9px solid transparent;border-top-color:#fff;border-bottom:0}
+.tags{position:absolute;left:14px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--ink);border-radius:10px;padding:3px 10px 3px 3px;font-size:13.5px;font-weight:700}
+.tag .ti{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;color:#fff}
+.tag .ti svg{width:13px;height:13px}
+.ti.good{background:#3E9E5B} .ti.bad{background:#D9725F}
+.emo{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap;padding:12px 8px 4px}
+.emo b{font-family:var(--display);font-size:22px;line-height:1.1}
+.emo span{font-size:14px;color:var(--navy-soft)}
+.quad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px;padding:10px 8px 14px}
+.need{display:flex;flex-direction:column;gap:6px;min-width:0}
+.need-head{display:flex;align-items:center;gap:8px}
+.need-head .ni{width:28px;height:28px;border-radius:9px;background:rgba(255,255,255,.12);display:grid;place-items:center}
+.need-head .ni svg{width:17px;height:17px}
+.need-head b{font-family:var(--display);font-size:19px;line-height:1;flex:1}
+.need-head span{font-size:13.5px;color:var(--navy-soft);font-variant-numeric:tabular-nums}
 .bar{height:14px;border-radius:999px;background:var(--navy-track);padding:2px}
 .bar i{display:block;height:100%;border-radius:999px}
-.status{align-self:flex-start;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700}
+.status{align-self:flex-start;border-radius:8px;padding:1px 8px;font-size:12.5px;font-weight:700}
 .s-bad{background:var(--bad);color:var(--bad-ink)} .s-ok{background:var(--ok);color:var(--ok-ink)} .s-warn{background:var(--warn);color:var(--warn-ink)}
-.app-foot{padding:0 20px 16px;font-size:13px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;background:var(--navy-track);border-radius:20px;padding:6px}
+.quick span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 2px 7px;border-radius:15px;background:var(--navy-tile);font-family:var(--display);font-weight:700;font-size:14.5px;line-height:1}
+.quick span:first-child{background:var(--gold);color:var(--gold-ink)}
+.quick svg{width:24px;height:24px}
+.rig figcaption{font-size:13.5px;color:var(--navy-soft);padding:10px 8px 2px}
 
-/* Marquee */
-.mq{background:var(--navy);border-block:3px solid var(--navy-line);padding-block:16px;overflow:hidden}
-.mq-track{display:flex;width:max-content;animation:mq 40s linear infinite}
-.mq:hover .mq-track{animation-play-state:paused}
-.mq-group{display:flex;gap:12px;padding-right:12px;margin:0;list-style:none;padding-left:0}
-.chip{display:inline-flex;align-items:center;gap:12px;background:var(--navy-tile);border-radius:18px;padding:10px 20px 10px 10px;color:#fff;font-family:var(--display);font-weight:700;font-size:19px;white-space:nowrap}
-.chip span{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.14);display:grid;place-items:center}
-@keyframes mq{to{transform:translateX(-50%)}}
-@media (prefers-reduced-motion:reduce){.mq-track{animation:none}}
+/* 40 vs 4 */
+.versus{background:var(--paper);padding-block:56px}
+.versus .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start}
+.versus h2{font-size:clamp(30px,3.4vw,42px)}
+.theirs h2{color:var(--muted)}
+.forty{list-style:none;margin:20px 0 0;padding:0;columns:3;column-gap:20px;font-size:14px;line-height:1.75;color:#6E7E92}
+.forty li{text-decoration:line-through;text-decoration-color:#A7B5C4;break-inside:avoid}
+.ours{background:var(--navy);color:#fff;border:3px solid var(--navy-edge);border-radius:28px;padding:26px 24px 24px}
+.four{list-style:none;margin:18px 0 18px;padding:0;display:flex;flex-direction:column}
+.four li{display:grid;grid-template-columns:40px 92px 1fr;align-items:center;gap:12px;padding:11px 0;border-top:1px solid rgba(255,255,255,.14)}
+.four .ni{width:40px;height:40px;border-radius:12px;background:var(--navy-tile);display:grid;place-items:center}
+.four b{font-family:var(--display);font-size:21px;line-height:1}
+.four span{color:var(--navy-soft);font-size:16px;line-height:1.35}
+.ours .rest{font-family:var(--display);font-weight:800;font-size:26px;line-height:1.1;color:var(--gold)}
 
-/* Features */
-.features{background:var(--paper);padding-block:64px}
-.features .wrap{display:flex;flex-direction:column;gap:32px}
-.section-head{display:flex;flex-direction:column;gap:8px;max-width:40em}
-.section-head h2{font-size:48px}
-.section-head p{margin:0;font-size:19px;color:var(--body)}
-.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.card{background:var(--ground);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;min-width:0}
-.card .label{font-weight:700;font-size:15px;color:var(--navy)}
-.card h3{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.05;margin:0}
-.card p{margin:0;font-size:17px;color:var(--body)}
-.card-foot{margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;gap:6px}
-.tag{background:var(--paper);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.badges{margin-top:auto;padding-top:8px;display:flex;gap:12px;align-items:flex-start}
-.badge{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700}
+/* moods + milestones */
+.pair{padding-block:56px}
+.pair .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0}
+.pair article{display:flex;flex-direction:column;gap:12px;padding-right:40px}
+.pair article + article{padding:0 0 0 40px;border-left:2px solid var(--rule)}
+.pair h2{font-size:clamp(28px,3vw,38px)}
+.pair p{color:var(--body);max-width:32em}
+.moodrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.moodrow .tag{background:var(--paper);font-size:15px;padding:5px 12px 5px 5px;border-radius:12px}
+.moodrow .ti{width:24px;height:24px;border-radius:8px}
+.moodrow .ti svg{width:15px;height:15px}
+.badges{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 8px;margin-top:8px}
+.badge{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;min-width:0}
+.badge svg{width:52px;height:58px}
+.badge b{font-family:var(--display);font-weight:700;font-size:15px;line-height:1.1}
+.badge span{font-size:12.5px;color:var(--muted)}
+.badge.locked b{color:var(--muted)}
 
-/* Punchline */
-.punch{background:var(--navy);color:#fff;padding-block:56px}
-.punch .wrap{display:flex;flex-direction:column;gap:8px}
-.punch p{margin:0;font-family:var(--display);line-height:1.1}
-.punch .a{font-weight:700;font-size:32px;color:var(--navy-soft)}
-.punch .b{font-weight:800;font-size:44px}
+/* the log */
+.log{padding-block:0 56px}
+.log h2{font-size:clamp(30px,3.4vw,42px);margin-bottom:18px}
+.entries{list-style:none;margin:0;padding:6px 24px;background:var(--paper);border-radius:26px}
+.entries li{display:grid;grid-template-columns:76px 40px minmax(0,1fr) auto;align-items:center;gap:14px;padding:16px 0;border-top:1px solid var(--rule)}
+.entries li:first-child{border-top:0}
+.entries time{font-size:15px;color:var(--muted);font-variant-numeric:tabular-nums}
+.entries .ni{width:40px;height:40px;border-radius:12px;background:var(--ground);display:grid;place-items:center;color:var(--navy)}
+.entries .what{font-size:18px;color:var(--body)}
+.entries .verdict{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05;text-align:right}
 
-/* Status report */
-.report{padding-block:64px}
-.report .wrap{display:flex;flex-direction:column;gap:24px}
-.report h2{font-size:40px}
-.rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.row{background:var(--paper);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
-.row span{font-size:18px;line-height:1.4;color:var(--body)}
-.row b{font-family:var(--display);font-weight:800;font-size:30px;line-height:1}
+/* final */
+.final{background:var(--navy);color:#fff;border-top:3px solid var(--navy-edge);padding-block:48px}
+.final .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 32px}
+.final h2{font-size:clamp(32px,3.6vw,46px)}
+.final p{color:var(--navy-soft);font-size:18px;margin-top:8px}
+.final-act{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.final-act .aside{color:var(--navy-soft)}
+.final-act a:not(.btn){color:#fff;font-weight:700}
 
-/* Final CTA */
-.final{padding-block:0 64px}
-.final-box{background:var(--paper);border:3px solid var(--navy);border-radius:28px;padding:40px;display:flex;flex-wrap:wrap;align-items:center;gap:24px}
-.final-copy{flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:8px}
-.final-copy h2{font-size:40px;line-height:1.05}
-.final-copy p{margin:0;font-size:18px;color:var(--body)}
-.final-act{flex:1 1 220px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-
-/* Footer */
-.foot{background:var(--navy-deep);color:var(--navy-soft);padding-block:32px;font-size:14px}
-.foot .wrap{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center}
-.foot p{flex:999 1 320px;min-width:0;margin:0}
-.foot nav{display:flex;gap:20px}
+/* footer */
+.foot{background:var(--navy-deep);color:var(--navy-soft);padding-block:28px;font-size:14.5px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center}
+.foot p{margin-right:auto}
 .foot a{color:#fff}
 
-@media (max-width:900px){
-  .hero .wrap,.three,.rows{grid-template-columns:minmax(0,1fr)}
-  .navlinks{display:none}
-  .hero h1{font-size:44px}
-  .hero .kicker{font-size:24px}
-  .section-head h2{font-size:38px}
-  .punch .a{font-size:24px} .punch .b{font-size:32px}
-  .final-box{padding:28px}
+@media (max-width:940px){
+  .hero .wrap,.versus .wrap{grid-template-columns:minmax(0,1fr)}
+  .hero .wrap{gap:32px}
+  .rig{max-width:560px}
+  .forty{columns:3}
+}
+@media (max-width:760px){
+  .pair .wrap{grid-template-columns:minmax(0,1fr);gap:36px}
+  .pair article{padding:0}
+  .pair article + article{padding:32px 0 0;border-left:0;border-top:2px solid var(--rule)}
 }
 @media (max-width:600px){
-  .wrap{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
-  .top .wrap{gap:12px}
-  .brand span{font-size:22px}
-  .auth .btn{padding:0 14px;font-size:16px}
-  .hero{padding-block:40px 48px}
-  .hero h1{font-size:40px}
-  .room{height:240px}
-  .needs{gap:16px;padding:16px}
+  body{font-size:16px}
+  .wrap{padding-inline:max(16px,env(safe-area-inset-left,0px))}
+  .top .wrap{height:64px;gap:8px}
+  .brand b{font-size:22px}
+  .top .btn{min-height:44px;padding:0 14px;font-size:16px}
+  .hero{padding-block:28px 36px}
+  .hero .lede{font-size:17px}
+  .rig{border-radius:26px;padding:8px}
+  .room{aspect-ratio:4/3;border-radius:19px}
+  .emo b{font-size:20px}
+  .quad{gap:12px 14px}
+  .need-head b{font-size:17px}
+  .need-head span{font-size:12.5px}
+  .quick span{font-size:13px}
+  .versus,.pair{padding-block:40px}
+  .forty{columns:2;font-size:13.5px}
+  .ours{padding:20px 16px 18px;border-radius:24px}
+  .four li{grid-template-columns:36px 78px 1fr;gap:10px}
+  .four .ni{width:36px;height:36px}
+  .four b{font-size:19px}
+  .four span{font-size:15px}
+  .badges{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 4px}
+  .badge svg{width:44px;height:49px}
+  .badge b{font-size:13px}
+  .log{padding-block:0 40px}
+  .entries{padding:2px 16px;border-radius:22px}
+  .entries li{grid-template-columns:36px minmax(0,1fr);gap:4px 12px;padding:14px 0}
+  .entries .ni{grid-row:span 3;align-self:start;width:36px;height:36px}
+  .entries time{grid-column:2;font-size:14px}
+  .entries .what{grid-column:2;font-size:17px}
+  .entries .verdict{grid-column:2;text-align:left;font-size:22px}
+  .final{padding-block:36px}
 }
-@media (max-width:380px){ .brand span{display:none} }
+@media (max-width:380px){ .brand b{display:none} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
-
-<style>body{margin:0}img{max-width:100%}</style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-bottle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M10.5 2v3l-2 2.5V20a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7.5l-2-2.5V2"/><path d="M8.5 12h7M8.5 16h7"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></symbol>
+  <symbol id="i-diaper" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7h18v3c0 5-4 9-9 9s-9-4-9-9z"/><path d="M8 10c0 2.5 1.8 4.5 4 4.5s4-2 4-4.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20s-7-4.3-8.6-8.7C2.2 8 4.2 5 7.2 5c1.9 0 3.2 1 4.8 2.8C13.6 6 14.9 5 16.8 5c3 0 5 3 3.8 6.3C19 15.7 12 20 12 20z"/></symbol>
+  <symbol id="i-rattle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M13 13l7 7M18 16l-2 2"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-tub" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2"/><circle cx="13" cy="8" r="1"/><circle cx="16" cy="6" r="1.3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-bang" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"><path d="M12 4.5v10"/><circle cx="12" cy="19.5" r=".6" fill="currentColor"/></symbol>
+  <symbol id="hex" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z"/></symbol>
+</svg>
+
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Just a Baby home">
       <span class="mark" aria-hidden="true"><i style="height:10px"></i><i style="height:18px"></i><i style="height:14px"></i></span>
-      <span>Just a Baby</span>
+      <b>Just a Baby</b>
     </a>
-    <nav class="navlinks" aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#milestones">Milestones</a>
-    </nav>
-    <div class="auth">
-      <a class="btn btn-ghost" href="/login/">Log in</a>
-      <a class="btn btn-gold" href="/signup/">Sign up</a>
-    </div>
+    <a class="btn btn-line" href="/login/">Log in</a>
+    <a class="btn btn-gold" href="/signup/">Sign up</a>
   </div>
 </header>
 
@@ -193,137 +240,139 @@ h1,h2,h3{text-wrap:balance}
   <section class="hero">
     <div class="wrap">
       <div class="hero-copy">
-        <h1 class="display">You're at the mercy of moods and milestones.</h1>
-        <p class="kicker">This app won't add to either.</p>
+        <h1>You're at the mercy of moods and milestones.</h1>
+        <p class="then">This app won't add to either.</p>
         <p class="lede">Tap to log feeds, naps, diapers, play and baths. See what your baby needs at a glance.</p>
         <div class="cta-row">
-          <a class="btn btn-navy" href="/signup/">Sign up</a>
-          <a href="#how">How it works</a>
+          <a class="btn btn-gold btn-big" href="/signup/">Sign up</a>
+          <span class="aside">Set-up takes a minute. Naming the baby takes longer.</span>
         </div>
-        <span class="small">Set-up takes a minute. Naming the baby takes longer.</span>
       </div>
 
-      <figure class="app" style="margin:0" aria-label="Preview of the Just a Baby app">
+      <figure class="rig" aria-label="The Just a Baby home screen">
         <div class="room">
-          <img src="/images/baby.png" alt="A cartoon baby in her room in the Just a Baby app" width="640" height="300">
+          <img src="/images/baby.png" alt="A cartoon baby, asleep" width="980" height="554">
           <div class="bubble">Be held. Standing. Not sitting.</div>
-          <div class="moods">
-            <span class="mood"><i style="background:var(--bad-bar)"></i>Getting Hungry</span>
-            <span class="mood"><i style="background:var(--ok)"></i>Well Rested</span>
+          <div class="tags">
+            <span class="tag"><span class="ti bad"><svg aria-hidden="true"><use href="#i-bang"/></svg></span>Getting Hungry</span>
+            <span class="tag"><span class="ti good"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>Well Rested</span>
           </div>
         </div>
-        <div class="emotion">
-          <b>Emotion: Fine. Suspiciously fine.</b>
-          <span class="small" style="font-size:14px">Norah · 3 months</span>
-        </div>
-        <div class="needs">
+        <div class="emo"><b>Emotion: Fine. Suspiciously fine.</b><span>Norah · 3 months</span></div>
+        <div class="quad">
           <div class="need">
-            <div class="need-head"><b>Hunger</b><span>5h 10m</span></div>
+            <div class="need-head"><span class="ni"><svg aria-hidden="true"><use href="#i-bottle"/></svg></span><b>Hunger</b><span>5h 10m</span></div>
             <div class="bar"><i style="width:12%;background:var(--bad-bar)"></i></div>
             <span class="status s-bad">Check baby</span>
           </div>
           <div class="need">
-            <div class="need-head"><b>Energy</b><span>up 45m</span></div>
+            <div class="need-head"><span class="ni"><svg aria-hidden="true"><use href="#i-sun"/></svg></span><b>Energy</b><span>up 45m</span></div>
             <div class="bar"><i style="width:82%;background:var(--ok)"></i></div>
             <span class="status s-ok">All good</span>
           </div>
           <div class="need">
-            <div class="need-head"><b>Hygiene</b><span>2h 50m</span></div>
+            <div class="need-head"><span class="ni"><svg aria-hidden="true"><use href="#i-drop"/></svg></span><b>Hygiene</b><span>2h 50m</span></div>
             <div class="bar"><i style="width:45%;background:var(--warn)"></i></div>
             <span class="status s-warn">Coming up</span>
           </div>
           <div class="need">
-            <div class="need-head"><b>Social</b><span>40m</span></div>
+            <div class="need-head"><span class="ni"><svg aria-hidden="true"><use href="#i-heart"/></svg></span><b>Social</b><span>40m</span></div>
             <div class="bar"><i style="width:70%;background:var(--ok)"></i></div>
             <span class="status s-ok">All good</span>
           </div>
         </div>
-        <figcaption class="app-foot">Bars show time since your last log.</figcaption>
+        <div class="quick" aria-hidden="true">
+          <span><svg><use href="#i-bottle"/></svg>Feed</span>
+          <span><svg><use href="#i-moon"/></svg>Nap</span>
+          <span><svg><use href="#i-diaper"/></svg>Diaper</span>
+          <span><svg><use href="#i-rattle"/></svg>Play</span>
+          <span><svg><use href="#i-tub"/></svg>Bath</span>
+        </div>
+        <figcaption>Bars show time since your last log.</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="mq" aria-label="Quick log actions">
-    <div class="mq-track">
-      <ul class="mq-group">
-        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M10.5 2v3l-2 2.5V20a2 2 0 0 0 2 2h3a2 2 0 0 0 2-2V7.5l-2-2.5V2M8.5 12h7"/></svg></span>Log feed</li>
-        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>Start nap</li>
-        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h18v2a9 9 0 0 1-18 0zM8 14q4 3 8 0"/></svg></span>Log diaper</li>
-        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M3 12h18M12 3a14 14 0 0 1 0 18"/></svg></span>Log play</li>
-        <li class="chip"><span><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18v2a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6zM6 12V6a2 2 0 0 1 4 0"/></svg></span>Log bath</li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="features" id="how">
+  <section class="versus" id="how" aria-label="What we track">
     <div class="wrap">
-      <div class="section-head">
-        <h2 class="display">It's just a baby.</h2>
-        <p>Inspired by the simple online games of the early 2000s, back before the internet got complicated. A few bars, a few little moods and permission to relax.</p>
+      <div class="theirs">
+        <h2>Other baby apps track 40 things.</h2>
+        <ul class="forty">
+          <li>Feed duration</li><li>Ounces per feed</li><li>Left side minutes</li><li>Right side minutes</li>
+          <li>Pumping output</li><li>Burps per feed</li><li>Spit-up volume</li><li>Wake windows</li>
+          <li>Sleep debt</li><li>Nap quality score</li><li>Night wakings</li><li>Time to fall asleep</li>
+          <li>Room temperature</li><li>Humidity</li><li>White noise volume</li><li>Swaddle hours</li>
+          <li>Rocking minutes</li><li>Tummy time minutes</li><li>Diaper colour chart</li><li>Diaper weight</li>
+          <li>Soother sessions</li><li>Bath water temperature</li><li>Lotion applications</li><li>Nail trims</li>
+          <li>Outfit changes</li><li>Car seat minutes</li><li>Stroller distance</li><li>Outdoor minutes</li>
+          <li>Crying minutes</li><li>Fuss score</li><li>Hiccup episodes</li><li>Sneezes</li>
+          <li>Smiles per day</li><li>Words heard</li><li>Reading minutes</li><li>Toy rotations</li>
+          <li>Leap countdown</li><li>Regression forecast</li><li>Caregiver shifts</li><li>Your own sleep</li>
+        </ul>
       </div>
-      <div class="three">
-        <article class="card">
-          <span class="label">Needs and little moods</span>
-          <h3>Let your baby be a baby.</h3>
-          <p>Hunger, Energy, Hygiene and Social in one view. Each log adds a little mood, like Well Fed or Fresh Diaper.</p>
-          <div class="card-foot">
-            <span class="tag">Well Fed (3h)</span><span class="tag">Fresh Diaper</span><span class="tag">Overstimulated</span>
-          </div>
-        </article>
-        <article class="card" id="milestones">
-          <span class="label">Milestones</span>
-          <h3>Save the dates of important milestones.</h3>
-          <p>First Coo. First Full Night. Log it with a tap. We'll handle the confetti.</p>
-          <div class="badges">
-            <div class="badge">
-              <svg role="img" aria-label="First Coo, logged" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#EDB955"/><g transform="translate(14 17)" fill="none" stroke="#2B1E00" stroke-width="2.2" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 9v6M16 6v12M20 10v4"/></g></svg>
-              Oct 12
-            </div>
-            <svg role="img" aria-label="Not logged yet" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg>
-            <svg role="img" aria-label="Not logged yet" width="48" height="54" viewBox="0 0 52 58"><path d="M26 2l22 12.5v29L26 56 4 43.5v-29z" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg>
-          </div>
-        </article>
-        <article class="card">
-          <span class="label">At a glance</span>
-          <h3>You're doing great. Don't stress over wake windows.</h3>
-          <p>Bars show time since your last log. No schedules to hit. No catching up required.</p>
-          <div class="card-foot">
-            <span class="tag">9:50am Nap</span><span class="tag">11:18am Story time</span>
-          </div>
-        </article>
+      <div class="ours">
+        <h2>We track the 4 that matter.</h2>
+        <ul class="four">
+          <li><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-bottle"/></svg></span><b>Hunger</b><span>Time since the last feed.</span></li>
+          <li><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></span><b>Energy</b><span>Time awake, or how long the nap's been going.</span></li>
+          <li><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg></span><b>Hygiene</b><span>Time since the last diaper or bath.</span></li>
+          <li><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><b>Social</b><span>Time since you last played.</span></li>
+        </ul>
+        <p class="rest">The rest is just a baby.</p>
       </div>
     </div>
   </section>
 
-  <section class="punch" aria-label="What we track">
+  <section class="pair" id="milestones">
     <div class="wrap">
-      <p class="a">Other baby apps track 40 things.</p>
-      <p class="b">We track the 4 that matter. The rest is just a baby.</p>
+      <article>
+        <h2>Little moods</h2>
+        <p>Each log leaves a short tag on your baby, like Well Fed or Fresh Diaper. They change as the bars do.</p>
+        <div class="moodrow">
+          <span class="tag"><span class="ti good"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>Well Fed (3h)</span>
+          <span class="tag"><span class="ti good"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>Fresh Diaper</span>
+          <span class="tag"><span class="ti good"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>Story Time</span>
+          <span class="tag"><span class="ti bad"><svg aria-hidden="true"><use href="#i-bang"/></svg></span>Sleepy Eyes</span>
+          <span class="tag"><span class="ti bad"><svg aria-hidden="true"><use href="#i-bang"/></svg></span>Overstimulated</span>
+        </div>
+      </article>
+      <article>
+        <h2>Milestones</h2>
+        <p>32 badges from coming home to the first birthday. Pick one, set the date, it unlocks. Nothing is ever marked late.</p>
+        <div class="badges">
+          <div class="badge"><svg role="img" aria-label="Logged"><use href="#hex" fill="#EDB955"/></svg><b>Home Sweet Home</b><span>Jul 21</span></div>
+          <div class="badge"><svg role="img" aria-label="Logged"><use href="#hex" fill="#6FD25C"/></svg><b>Splash Debut</b><span>Jul 29</span></div>
+          <div class="badge"><svg role="img" aria-label="Logged"><use href="#hex" fill="#7FB4E8"/></svg><b>Out and About</b><span>Aug 3</span></div>
+          <div class="badge"><svg role="img" aria-label="Logged"><use href="#hex" fill="#FF8A8A"/></svg><b>First Coo</b><span>Oct 12</span></div>
+          <div class="badge locked"><svg role="img" aria-label="Not logged yet"><use href="#hex" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg><b>Giggle Unlocked</b><span>Whenever</span></div>
+          <div class="badge locked"><svg role="img" aria-label="Not logged yet"><use href="#hex" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg><b>Hand Discovery</b><span>Whenever</span></div>
+          <div class="badge locked"><svg role="img" aria-label="Not logged yet"><use href="#hex" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg><b>Barrel Roll</b><span>Whenever</span></div>
+          <div class="badge locked"><svg role="img" aria-label="Not logged yet"><use href="#hex" fill="#F4F7FA" stroke="#8597AD" stroke-width="2" stroke-dasharray="5 4"/></svg><b>Night Shift Off</b><span>Whenever</span></div>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section class="report">
+  <section class="log" aria-labelledby="logh">
     <div class="wrap">
-      <h2 class="display">Today's log, explained.</h2>
-      <div class="rows">
-        <div class="row"><span>Ate. Then ate again 40m later.</span><b>They're just a baby.</b></div>
-        <div class="row"><span>Refused the nap. Bold strategy.</span><b>It's just a baby.</b></div>
-        <div class="row"><span>Cried at the dog. Again.</span><b>"I'm just a baby."</b></div>
-      </div>
+      <h2 id="logh">Today's log, explained.</h2>
+      <ol class="entries">
+        <li><time>8:12am</time><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-bottle"/></svg></span><span class="what">Ate. Then ate again 40m later.</span><span class="verdict">They're just a baby.</span></li>
+        <li><time>10:30am</time><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></span><span class="what">Refused the nap. Bold strategy.</span><span class="verdict">It's just a baby.</span></li>
+        <li><time>1:05pm</time><span class="ni"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span><span class="what">Cried at the dog. Again.</span><span class="verdict">"I'm just a baby."</span></li>
+      </ol>
     </div>
   </section>
 
   <section class="final" id="signup">
     <div class="wrap">
-      <div class="final-box">
-        <div class="final-copy">
-          <h2 class="display">Your baby has needs. Now they have bars.</h2>
-          <p>The bars will be here whenever you are.</p>
-        </div>
-        <div class="final-act" id="login">
-          <a class="btn btn-gold btn-lg" href="/signup/">Sign up</a>
-          <span class="small">Already have a household? <a href="/login/" style="font-weight:700">Log in</a></span>
-        </div>
+      <div>
+        <h2>Your baby has needs. Now they have bars.</h2>
+        <p>The bars will be here whenever you are.</p>
+      </div>
+      <div class="final-act" id="login">
+        <a class="btn btn-gold btn-big" href="/signup/">Sign up</a>
+        <span class="aside">Already have a household? <a href="/login/">Log in</a></span>
       </div>
     </div>
   </section>
@@ -332,20 +381,9 @@ h1,h2,h3{text-wrap:balance}
 <footer class="foot">
   <div class="wrap">
     <p>Just a Baby is a tracker, not medical advice.</p>
-    <nav aria-label="Footer"><a href="/privacy.html">Privacy</a></nav>
+    <a href="/privacy.html">Privacy</a>
     <span>© 2026 Just a Baby</span>
   </div>
 </footer>
-
-<script>
-// Fill the marquee: repeat the chip set so one half spans wide screens, then clone it for a seamless loop.
-(function(){
-  var track=document.querySelector('.mq-track'); if(!track) return;
-  var group=track.querySelector('.mq-group'); var chips=Array.prototype.slice.call(group.children);
-  for(var r=0;r<2;r++){chips.forEach(function(c){var n=c.cloneNode(true);n.setAttribute('aria-hidden','true');group.appendChild(n);});}
-  var copy=group.cloneNode(true); copy.setAttribute('aria-hidden','true'); track.appendChild(copy);
-})();
-</script>
-
 </body>
 </html>
