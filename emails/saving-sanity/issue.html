@@ -1,0 +1,89 @@
+<x-base :font-family="globalStyles.fonts.primary_kksygc4ebzbj" :font-size="16" :line-height="1.55" :background="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnight_wya5dz8w696y }" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" color-scheme="light dark">
+  <x-section data-layer-label="Email" width="560px" padding="0px" :margin="{ small: `0px`, medium: `32px 24px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }" :outer-background="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnight_wya5dz8w696y }">
+
+    <x-box data-layer-label="Masthead" :padding="{ small: `28px 20px 22px`, medium: `36px 32px 26px` }" :background="globalStyles.colors.ssink_ni6ntrfao9f7">
+      <x-image data-layer-label="Wordmark" src="https://justababy.ca/images/saving-sanity/wordmark.png" alt="Saving Sanity" width="300px" align="left" href="https://justababy.ca/#newsletter" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.medium_t86ggiatn3ri, `0px`)" />
+      <x-paragraph data-layer-label="Tagline" margin="0" font-weight="700" :font-size="18" :line-height="1.3" :color="globalStyles.colors.neutral100_zocn77vxd7a9">The newsletter for parents that need it.</x-paragraph>
+    </x-box>
+    <x-box data-layer-label="Colour bars" padding="0px" :background="globalStyles.colors.ssink_ni6ntrfao9f7">
+      <x-image src="https://justababy.ca/images/saving-sanity/colour-bars.png" alt="" width="100%" />
+    </x-box>
+
+    <x-box data-layer-label="Issue strip" :padding="{ small: `14px 20px 0px`, medium: `16px 32px 0px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-row :layout="[28, 72]" :gap="0" :break-point="1">
+        <x-column><x-paragraph margin="0" font-weight="700" :font-size="14" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">Issue 1</x-paragraph></x-column>
+        <x-column><x-paragraph margin="0" text-align="right" :font-size="14" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">Listings for the next 2 weeks</x-paragraph></x-column>
+      </x-row>
+      <x-hr :height="3" :background-color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" margin="10px 0 0 0" />
+    </x-box>
+
+    <x-box data-layer-label="Parent story" :padding="{ small: `22px 20px`, medium: `26px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-row :layout="[24, 76]" :gap="0" :break-point="1">
+        <x-column padding="0 12px 0 0">
+          <x-paragraph data-layer-label="Time slot" margin="0" font-weight="700" :font-size="15" :line-height="1.3" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">3:12am</x-paragraph>
+          <x-paragraph data-layer-label="Slot name" margin="0" :font-size="13" :line-height="1.35" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }">Parent story</x-paragraph>
+        </x-column>
+        <x-column>
+          <x-heading-1 data-layer-label="Headline" :font-family="globalStyles.fonts.ssdisplay_6lh6zcy1buyf" font-weight="800" :font-size="{ small: 28, medium: 32 }" :line-height="1.06" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">Why did we get a puppy right before we got pregnant?</x-heading-1>
+          <x-paragraph data-layer-label="Welcome" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">Welcome to Saving Sanity. Every 2 weeks: a parent story, a baby thing that's been good since the '90s, and one thing just for you. About 4 minutes to read. You have 4 minutes. Probably.</x-paragraph>
+          <x-paragraph data-layer-label="Story" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">We thought a puppy would be good practice. A starter baby, but with fur.</x-paragraph>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">It was not good practice. It was a second, faster baby that eats shoes.</x-paragraph>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">6 weeks later: 2 lines on a test. The puppy was not consulted.</x-paragraph>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">Now the dog guards the nursery door like a small, judgmental security guard. We've stopped asking whose idea the puppy was.</x-paragraph>
+          <x-paragraph data-layer-label="Reply ask" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }" margin="0">Got a story like this? Hit reply. We read every one.</x-paragraph>
+        </x-column>
+      </x-row>
+    </x-box>
+    <x-box data-layer-label="Rule" :padding="{ small: `0px 20px`, medium: `0px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-hr margin="0" :background-color="{ light: globalStyles.colors.ssrule_mts5c416kcyy, dark: globalStyles.colors.ssnightrule_mzecebl31fb4 }" />
+    </x-box>
+    <x-box data-layer-label="Still good" :padding="{ small: `22px 20px`, medium: `26px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-row :layout="[24, 76]" :gap="0" :break-point="1">
+        <x-column padding="0 12px 0 0">
+          <x-paragraph data-layer-label="Time slot" margin="0" font-weight="700" :font-size="15" :line-height="1.3" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">6:05am</x-paragraph>
+          <x-paragraph data-layer-label="Slot name" margin="0" :font-size="13" :line-height="1.35" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }">Still good since the '90s</x-paragraph>
+        </x-column>
+        <x-column>
+          <x-heading-2 data-layer-label="Product name" :font-family="globalStyles.fonts.ssdisplay_6lh6zcy1buyf" font-weight="800" :font-size="{ small: 21, medium: 23 }" :line-height="1.12" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.medium_t86ggiatn3ri, `0px`)">Fisher-Price Rock-a-Stack</x-heading-2>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">Around since 1960. Still the same idea: big ring on the bottom, everything else wherever your baby feels like putting it. No app. No batteries. No firmware update. Just rings.</x-paragraph>
+          <x-paragraph data-layer-label="Product link" margin="0" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }"><a href="https://example.com/REPLACE-WITH-ROCK-A-STACK-LINK" style="color: inherit">Find the Rock-a-Stack</a></x-paragraph>
+        </x-column>
+      </x-row>
+    </x-box>
+    <x-box data-layer-label="Rule" :padding="{ small: `0px 20px`, medium: `0px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-hr margin="0" :background-color="{ light: globalStyles.colors.ssrule_mts5c416kcyy, dark: globalStyles.colors.ssnightrule_mzecebl31fb4 }" />
+    </x-box>
+    <sponsor-spot></sponsor-spot>
+    <x-box data-layer-label="Rule" :padding="{ small: `0px 20px`, medium: `0px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-hr margin="0" :background-color="{ light: globalStyles.colors.ssrule_mts5c416kcyy, dark: globalStyles.colors.ssnightrule_mzecebl31fb4 }" />
+    </x-box>
+    <x-box data-layer-label="Parent pleaser" :padding="{ small: `22px 20px`, medium: `26px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-row :layout="[24, 76]" :gap="0" :break-point="1">
+        <x-column padding="0 12px 0 0">
+          <x-paragraph data-layer-label="Time slot" margin="0" font-weight="700" :font-size="15" :line-height="1.3" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">8:30pm</x-paragraph>
+          <x-paragraph data-layer-label="Slot name" margin="0" :font-size="13" :line-height="1.35" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }">Parent pleaser</x-paragraph>
+        </x-column>
+        <x-column>
+          <x-image data-layer-label="Pleaser image" src="https://placehold.co/1000x500/1E1E1E/ECECEC/png?text=Air+fryer+photo" alt="A countertop air fryer with the basket pulled out" href="https://example.com/REPLACE-WITH-AIR-FRYER-LINK" width="100%" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)" />
+          <x-heading-2 data-layer-label="Pleaser name" :font-family="globalStyles.fonts.ssdisplay_6lh6zcy1buyf" font-weight="800" :font-size="{ small: 21, medium: 23 }" :line-height="1.12" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.medium_t86ggiatn3ri, `0px`)">An air fryer</x-heading-2>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">Frozen dumplings in, timer on, walk away. Come back to dinner.</x-paragraph>
+          <x-paragraph :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.large_rdj299g5ib8f, `0px`)">It's the only thing in the house that doesn't need you to watch it.</x-paragraph>
+          <x-cta data-layer-label="Pleaser button" href="https://example.com/REPLACE-WITH-AIR-FRYER-LINK" align="left" font-weight="700" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" border-style="solid" border-width="2px" :border-color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" :border-radius="globalStyles.radius.small_puru5lqyvwgw" :padding="Component.utils.spacing(globalStyles.spacing.small_bthbvhyvxrbc, globalStyles.spacing.large_rdj299g5ib8f)">Find an air fryer</x-cta>
+        </x-column>
+      </x-row>
+    </x-box>
+    <x-box data-layer-label="Off air" :padding="{ small: `22px 20px`, medium: `26px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }">
+      <x-hr :height="3" :background-color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }" margin="0 0 16px 0" />
+      <x-row :layout="[24, 76]" :gap="0" :break-point="1">
+        <x-column padding="0 12px 0 0"><x-paragraph margin="0" font-weight="700" :font-size="15" :line-height="1.3" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">Off air</x-paragraph></x-column>
+        <x-column><x-paragraph margin="0" :color="{ light: globalStyles.colors.ssink_ni6ntrfao9f7, dark: globalStyles.colors.ssnightink_1jex18xno8tk }">That's the night. Next listings in 2 weeks, same time, roughly.</x-paragraph></x-column>
+      </x-row>
+    </x-box>
+
+    <x-box data-layer-label="Footer" :padding="{ small: `18px 20px 28px`, medium: `20px 32px 32px` }" :background="{ light: globalStyles.colors.neutral100_zocn77vxd7a9, dark: globalStyles.colors.ssnightpage_df8m1wneakol }" border-style="solid" border-width="1px 0 0 0" :border-color="{ light: globalStyles.colors.ssrule_mts5c416kcyy, dark: globalStyles.colors.ssnightrule_mzecebl31fb4 }">
+      <x-paragraph :font-size="13" :line-height="1.5" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }" :margin="Component.utils.spacing(`0px`, `0px`, globalStyles.spacing.medium_t86ggiatn3ri, `0px`)">You're getting Saving Sanity because you signed up for it on justababy.ca. Saving Sanity is made by Just a Baby. Some issues have a sponsor. We always label it.</x-paragraph>
+      <x-paragraph :font-size="13" :line-height="1.5" :color="{ light: globalStyles.colors.ssmuted_m5u4pclgyhzp, dark: globalStyles.colors.ssnightmuted_1aqpi3ufneln }" margin="0">Just a Baby · {{ snippets.mailing_address }}<br><a href="{% unsubscribe_url %}" style="color: inherit">Unsubscribe from Saving Sanity</a> · <a href="{% manage_subscription_preferences_url %}" style="color: inherit">Email preferences</a></x-paragraph>
+    </x-box>
+
+  </x-section>
+</x-base>
