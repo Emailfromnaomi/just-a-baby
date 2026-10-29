@@ -43,18 +43,18 @@ Use these as `{{ customer.<name> }}` in Liquid. Timestamps are Unix seconds, so 
 | `latest_milestone_key` | string | `first_smile` | Most recent by date. Keys are listed in `milestones.js` |
 | `latest_milestone_name` | string | `First Real Smile` | |
 | `latest_milestone_at` | timestamp | | The milestone date at noon UTC |
-| `newsletter_opt_in` | boolean | `true` | Ticked "Also send me The Parent Bar" on /signup. Only sent when true |
+| `newsletter_opt_in` | boolean | `true` | Ticked the newsletter box on /signup. Only sent when true |
 | `newsletter_source` | string | `app_signup` | Where the opt-in came from |
 | `app` | string | `just-a-baby` | |
 
-### The Parent Bar (newsletter)
+### Seriously? (newsletter)
 
 People join the newsletter two ways, and both set `newsletter_opt_in = true`:
 
 - **Website footer** (`/#newsletter`): a plain HTML form that POSTs to Customer.io's form endpoint (form id `jab_newsletter_footer`), which identifies the person by email and sets `newsletter_opt_in` and `newsletter_source = website_footer`. No tracking script runs on the page.
 - **App sign-up** (`/signup`): an unticked checkbox. When ticked, it's saved on the account (`user_metadata.newsletter_opt_in`) and `cio_profile()` sends it.
 
-The **Newsletter: The Parent Bar** automation in Customer.io enters anyone with `newsletter_opt_in = true` and an email.
+The **Newsletter: Seriously?** automation in Customer.io enters anyone with `newsletter_opt_in = true` and an email.
 
 ## Events
 
