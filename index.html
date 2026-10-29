@@ -156,26 +156,30 @@ svg.i{width:22px;height:22px;flex:none}
 .final-act a:not(.btn){color:#fff;font-weight:700}
 
 /* footer */
-.foot{background:var(--navy-deep);color:var(--navy-soft);font-size:14.5px}
+.foot{background:var(--navy-deep);color:var(--navy-soft);font-size:14.5px;padding-top:40px}
 .foot .legal{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;padding-block:28px}
 .foot .legal p{margin-right:auto}
 .foot a{color:#fff}
 
-/* newsletter signup (posts straight to Customer.io's form endpoint) */
-.news{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,460px);gap:20px 48px;align-items:center;padding-block:40px 36px;border-bottom:1px solid rgba(255,255,255,.12)}
-.news h2{font-size:clamp(28px,3vw,36px);color:#fff}
-.news h2 span{color:var(--gold)}
-.news .pitch{color:var(--navy-soft);font-size:17px;margin-top:8px;max-width:32em}
+/* newsletter signup: Saving Sanity has its own look (off-air black, test-card bars). Posts straight to Customer.io's form endpoint. */
+.news{--ss-black:#111111;--ss-grey:#BDBDBD;margin-block:0 32px;background:var(--ss-black);color:#fff;font-family:Helvetica,Arial,sans-serif;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:24px 48px;align-items:end;padding:32px 32px 46px;position:relative}
+.news::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;background:url(/images/saving-sanity/colour-bars.png) center/100% 100% no-repeat}
+.news h2{margin:0;line-height:0}
+.news h2 img{width:min(300px,70vw);height:auto;margin-left:-5px}
+.news .tagline{font-size:18px;font-weight:700;line-height:1.3;margin-top:14px;text-wrap:balance}
+.news .pitch{color:var(--ss-grey);font-size:16px;line-height:1.5;margin-top:6px;max-width:30em}
 .news form{display:flex;flex-direction:column;gap:8px}
-.news label{font-weight:700;color:#fff;font-size:15px}
-.news .row{display:flex;gap:10px}
-.news input[type=email]{flex:1;min-width:0;min-height:52px;border-radius:14px;border:2px solid var(--navy-edge);background:var(--navy-track);color:#fff;font:inherit;font-size:17px;padding:0 16px}
-.news input[type=email]::placeholder{color:#9DB0C7}
-.news input[type=email]:focus{border-color:var(--gold);outline:none}
-.news .btn{min-height:52px}
-.news .fine{font-size:13.5px;color:var(--navy-soft)}
-.news .done{display:none;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;color:#fff}
-.news .done small{display:block;font-family:var(--text);font-weight:400;font-size:15px;color:var(--navy-soft);margin-top:6px}
+.news label{font-weight:700;font-size:15px}
+.news .row{display:flex;gap:8px}
+.news input[type=email]{flex:1;min-width:0;min-height:52px;border-radius:2px;border:2px solid #fff;background:var(--ss-black);color:#fff;font:inherit;font-size:17px;padding:0 14px}
+.news input[type=email]::placeholder{color:#8F8F8F}
+.news input[type=email]:focus{outline:3px solid #00C0C0;outline-offset:2px}
+.news .ss-btn{min-height:52px;padding:0 22px;border:0;border-radius:2px;background:#fff;color:var(--ss-black);font:700 17px Helvetica,Arial,sans-serif;cursor:pointer}
+.news .ss-btn:hover{background:#E4E4E4}
+.news .ss-btn:focus-visible{outline:3px solid #00C0C0;outline-offset:2px}
+.news .fine{font-size:13.5px;color:var(--ss-grey)}
+.news .done{display:none;font-size:20px;font-weight:700;line-height:1.25}
+.news .done small{display:block;font-weight:400;font-size:15px;color:var(--ss-grey);margin-top:6px}
 .news.is-done form{display:none}
 .news.is-done .done{display:block}
 
@@ -224,7 +228,8 @@ svg.i{width:22px;height:22px;flex:none}
   .entries .what{grid-column:2;font-size:17px}
   .entries .verdict{grid-column:2;text-align:left;font-size:22px}
   .final{padding-block:36px}
-  .news{padding-block:32px 28px}
+  .foot{padding-top:24px}
+  .news{padding:24px 18px 38px;margin-block:0 24px}
   .news .row{flex-direction:column}
 }
 @media (max-width:380px){ .brand b{display:none} }
@@ -403,8 +408,9 @@ svg.i{width:22px;height:22px;flex:none}
   <div class="wrap">
     <section class="news" id="newsletter" aria-labelledby="newsh">
       <div>
-        <h2 id="newsh">Saving Sanity. <span>The newsletter for parents that need it.</span></h2>
-        <p class="pitch">Every 2 weeks: a parent story, a baby thing that's been good since the '90s, and one thing just for you.</p>
+        <h2 id="newsh"><img src="/images/saving-sanity/wordmark.png" alt="Saving Sanity" width="300" height="225"></h2>
+        <p class="tagline">The newsletter for parents that need it.</p>
+        <p class="pitch">Every 2 weeks: a parent story, a baby thing that's been good since the '90s, and one thing just for you. From the people who make Just a Baby.</p>
       </div>
       <div>
         <!-- Customer.io connected form: a plain POST to their form endpoint, then back here. No tracking script. -->
@@ -412,7 +418,7 @@ svg.i{width:22px;height:22px;flex:none}
           <label for="news-email">Email</label>
           <div class="row">
             <input id="news-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@example.com" required>
-            <button class="btn btn-gold" type="submit">Subscribe</button>
+            <button class="ss-btn" type="submit">Subscribe</button>
           </div>
           <input type="hidden" name="newsletter_opt_in" value="true">
           <input type="hidden" name="newsletter_source" value="website_footer">
