@@ -47,14 +47,14 @@ Use these as `{{ customer.<name> }}` in Liquid. Timestamps are Unix seconds, so 
 | `newsletter_source` | string | `app_signup` | Where the opt-in came from |
 | `app` | string | `just-a-baby` | |
 
-### Seriously? (newsletter)
+### Saving Sanity (newsletter)
 
 People join the newsletter two ways, and both set `newsletter_opt_in = true`:
 
 - **Website footer** (`/#newsletter`): a plain HTML form that POSTs to Customer.io's form endpoint (form id `jab_newsletter_footer`), which identifies the person by email and sets `newsletter_opt_in` and `newsletter_source = website_footer`. No tracking script runs on the page.
 - **App sign-up** (`/signup`): an unticked checkbox. When ticked, it's saved on the account (`user_metadata.newsletter_opt_in`) and `cio_profile()` sends it.
 
-The **Newsletter: Seriously?** automation in Customer.io enters anyone with `newsletter_opt_in = true` and an email.
+The **Newsletter: Saving Sanity** automation in Customer.io enters anyone with `newsletter_opt_in = true` and an email.
 
 ## Events
 
